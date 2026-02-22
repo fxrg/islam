@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفيق رمضان - موقعك الإسلامي الشامل</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <!-- الهيدر -->
+    <header class="main-header">
+        <div class="header-content">
+            <h1>🌙 رفيق رمضان</h1>
+            <p>موقعك الإسلامي الشامل لشهر رمضان المبارك</p>
+        </div>
+        <nav class="main-nav">
+            <a href="#planner" class="nav-link active">📖 الختم</a>
+            <a href="#daily-ayah" class="nav-link">📜 آية اليوم</a>
+            <a href="#daily-wird" class="nav-link">📿 الأذكار</a>
+            <a href="#sunnan" class="nav-link">☀️ السنن</a>
+            <a href="#feelings" class="nav-link">💚 مشاعرك</a>
+            <a href="#hadith" class="nav-link">📚 الأحاديث</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- قسم خطة الختم -->
+        <section id="planner" class="section">
+            <div class="section-header">
+                <h2>📖 خطة ختم القرآن في رمضان</h2>
+                <p>خطة منظمة لختم القرآن الكريم من أول يوم في رمضان حتى آخره</p>
+            </div>
+            
+            <div class="planner-controls">
+                <div class="control-group">
+                    <label>عدد مرات الختم:</label>
+                    <select id="khatma-count">
+                        <option value="1">ختمة واحدة</option>
+                        <option value="2">ختمتين</option>
+                        <option value="3">ثلاث ختمات</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>اليوم الحالي من رمضان:</label>
+                    <select id="current-day">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </select>
+                </div>
+                <button onclick="generatePlan()" class="btn btn-primary">إنشاء الخطة</button>
+            </div>
+
+            <div id="plan-result" class="plan-container">
+                <!-- سيتم عرض الخطة هنا -->
+            </div>
+
+            <div id="today-reading" class="today-reading-box">
+                <h3>📌 وردك اليوم</h3>
+                <div id="today-content">
+                    <p>اختر اليوم وعدد الختمات لمعرفة وردك</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم آية اليوم -->
+        <section id="daily-ayah" class="section">
+            <div class="section-header">
+                <h2>📜 آية اليوم</h2>
+                <p>آيات يومية من القرآن الكريم - رحلة إيمانية على مدار رمضان</p>
+            </div>
+            
+            <div class="ayah-day-selector">
+                <button onclick="changeAyahDay(-1)" class="btn-arrow" title="السابق">→</button>
+                <span id="ayah-day-num">اليوم 1</span>
+                <button onclick="changeAyahDay(1)" class="btn-arrow" title="التالي">←</button>
+            </div>
+
+            <div id="daily-ayah-content" class="daily-ayah-box">
+                <!-- سيتم عرض الآية هنا -->
+            </div>
+
+            <div class="ayah-navigation">
+                <button onclick="previousDayAyah()" class="btn btn-secondary">السابق →</button>
+                <button onclick="todayAyah()" class="btn btn-primary">📅 اليوم</button>
+                <button onclick="nextDayAyah()" class="btn btn-secondary">← التالي</button>
+            </div>
+        </section>
+
+        <!-- قسم الورد اليومي -->
+        <section id="daily-wird" class="section">
+            <div class="section-header">
+                <h2>📿 الورد اليومي</h2>
+                <p>أذكار وأوراد يومية للمسلم</p>
+            </div>
+            
+            <div class="wird-tabs">
+                <button class="wird-tab active" onclick="showWird('morning')">أذكار الصباح</button>
+                <button class="wird-tab" onclick="showWird('evening')">أذكار المساء</button>
+                <button class="wird-tab" onclick="showWird('sleep')">أذكار النوم</button>
+                <button class="wird-tab" onclick="showWird('afterPrayer')">أذكار بعد الصلاة</button>
+            </div>
+
+            <div id="wird-content" class="wird-content">
+                <!-- سيتم عرض الأذكار هنا -->
+            </div>
+        </section>
+
+        <!-- قسم سنن الوقت -->
+        <section id="sunnan" class="section">
+            <div class="section-header">
+                <h2>☀️ سنن الوقت الحالي</h2>
+                <p>سنن أهل السنة والجماعة حسب الوقت الذي أنت فيه</p>
+            </div>
+            
+            <div class="time-display">
+                <div class="current-time" id="current-time">--:--</div>
+                <div class="current-period" id="current-period">--</div>
+            </div>
+
+            <div id="sunnan-content" class="sunnan-box">
+                <!-- سيتم عرض السنن هنا -->
+            </div>
+        </section>
+
+        <!-- قسم آية لمشاعرك -->
+        <section id="feelings" class="section">
+            <div class="section-header">
+                <h2>💚 آية لمشاعرك</h2>
+                <p>اكتب ما تشعر به وسنجد لك آية قرآنية تناسب حالتك</p>
+            </div>
+            
+            <div class="feelings-search">
+                <input type="text" id="feeling-input" placeholder="اكتب مشاعرك هنا... (حزن، قلق، خوف، شكر، فرح...)" />
+                <button onclick="findAyah()" class="btn btn-primary">ابحث عن آية</button>
+            </div>
+
+            <div class="quick-feelings">
+                <span class="feeling-tag" onclick="quickFeeling('حزين')">😢 حزين</span>
+                <span class="feeling-tag" onclick="quickFeeling('قلق')">😰 قلق</span>
+                <span class="feeling-tag" onclick="quickFeeling('خائف')">😨 خائف</span>
+                <span class="feeling-tag" onclick="quickFeeling('شاكر')">🙏 شاكر</span>
+                <span class="feeling-tag" onclick="quickFeeling('سعيد')">😊 سعيد</span>
+                <span class="feeling-tag" onclick="quickFeeling('وحيد')">🥺 وحيد</span>
+                <span class="feeling-tag" onclick="quickFeeling('ضعيف')">😞 ضعيف</span>
+                <span class="feeling-tag" onclick="quickFeeling('محتاج')">🤲 محتاج</span>
+            </div>
+
+            <div id="ayah-result" class="ayah-result">
+                <!-- سيتم عرض الآية هنا -->
+            </div>
+        </section>
+
+        <!-- قسم الأحاديث -->
+        <section id="hadith" class="section">
+            <div class="section-header">
+                <h2>📚 أحاديث رمضان والصيام</h2>
+                <p>أحاديث نبوية صحيحة عن فضل رمضان والصيام</p>
+            </div>
+            
+            <div class="hadith-tabs">
+                <button class="hadith-tab active" onclick="showHadithCategory('ramadan')">🌙 فضل رمضان</button>
+                <button class="hadith-tab" onclick="showHadithCategory('siyam')">🍽️ الصيام</button>
+                <button class="hadith-tab" onclick="showHadithCategory('qiyam')">🌃 القيام</button>
+                <button class="hadith-tab" onclick="showHadithCategory('quran')">📖 القرآن</button>
+                <button class="hadith-tab" onclick="showHadithCategory('dua')">🤲 الدعاء</button>
+                <button class="hadith-tab" onclick="showHadithCategory('sadaqa')">💝 الصدقة</button>
+            </div>
+
+            <div id="hadith-content" class="hadith-results">
+                <!-- سيتم عرض الأحاديث هنا -->
+            </div>
+
+            <div class="hadith-search-section">
+                <h3>🔍 البحث في الأحاديث</h3>
+                <div class="hadith-search">
+                    <input type="text" id="skey" placeholder="اكتب كلمة البحث..." />
+                    <button onclick="check_hadith()" class="btn btn-primary">بحث</button>
+                </div>
+                <div id="hadith-loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>جاري البحث...</p>
+                </div>
+                <div id="dorar" class="hadith-results">
+                    <!-- سيتم عرض نتائج البحث هنا -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- الفوتر -->
+    <footer class="main-footer">
+        <p>🌙 رفيق رمضان - اللهم بلغنا رمضان وأعنا على صيامه وقيامه</p>
+        <p>سنة 2026م - موقع تعليمي لأهل السنة والجماعة</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

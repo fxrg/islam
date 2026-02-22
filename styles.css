@@ -1,0 +1,962 @@
+/* المتغيرات الأساسية */
+:root {
+    --primary-color: #1a5f4a;
+    --primary-light: #2d8a6e;
+    --primary-dark: #0d4233;
+    --gold: #d4af37;
+    --gold-light: #f4d35e;
+    --bg-color: #f5f1eb;
+    --card-bg: #ffffff;
+    --text-primary: #2c3e50;
+    --text-secondary: #5a6c7d;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+    --border-radius: 15px;
+    --transition: all 0.3s ease;
+}
+
+/* إعادة تعيين الأنماط */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', 'Amiri', sans-serif;
+    background: linear-gradient(135deg, #f5f1eb 0%, #e8e4db 100%);
+    color: var(--text-primary);
+    line-height: 1.8;
+    min-height: 100vh;
+}
+
+/* الهيدر */
+.main-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 2rem 1rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+}
+
+.header-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-family: 'Amiri', serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-content p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* التنقل */
+.main-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: var(--transition);
+    font-size: 0.95rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: var(--gold);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* الحاوية الرئيسية */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* الأقسام */
+.section {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.section:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--gold);
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-family: 'Amiri', serif;
+}
+
+.section-header p {
+    color: var(--text-secondary);
+}
+
+/* أزرار التحكم */
+.btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(26, 95, 74, 0.4);
+}
+
+/* قسم خطة الختم */
+.planner-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.control-group select {
+    padding: 0.8rem 1.5rem;
+    border: 2px solid var(--primary-light);
+    border-radius: 10px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.control-group select:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+/* خطة الختم */
+.plan-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.8rem;
+    margin-top: 2rem;
+}
+
+.day-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.day-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary-light);
+}
+
+.day-card.today {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+    border-color: var(--gold);
+}
+
+.day-card.completed {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+    color: white;
+}
+
+.day-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.day-card.completed .day-number {
+    color: white;
+}
+
+.day-reading {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+}
+
+.day-card.completed .day-reading {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* صندوق الورد اليومي */
+.today-reading-box {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.today-reading-box h3 {
+    color: var(--primary-dark);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+#today-content {
+    font-size: 1.1rem;
+    color: var(--primary-dark);
+}
+
+/* قسم الأذكار */
+.wird-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.wird-tab {
+    padding: 0.8rem 1.5rem;
+    border: 2px solid var(--primary-color);
+    background: white;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    color: var(--primary-color);
+    transition: var(--transition);
+}
+
+.wird-tab:hover, .wird-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.wird-content {
+    background: #f8f9fa;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.wird-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-right: 4px solid var(--primary-color);
+    transition: var(--transition);
+}
+
+.wird-item:hover {
+    transform: translateX(-5px);
+    box-shadow: var(--shadow);
+}
+
+.wird-text {
+    font-size: 1.2rem;
+    font-family: 'Amiri', serif;
+    line-height: 2;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.wird-count {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--primary-dark);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* قسم سنن الوقت */
+.time-display {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.current-time {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-family: 'Cairo', sans-serif;
+}
+
+.current-period {
+    font-size: 1.3rem;
+    color: var(--gold);
+    margin-top: 0.5rem;
+}
+
+.sunnan-box {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+}
+
+.sunna-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: var(--transition);
+}
+
+.sunna-item:hover {
+    transform: translateX(-5px);
+    box-shadow: var(--shadow);
+}
+
+.sunna-icon {
+    font-size: 2rem;
+    min-width: 50px;
+    text-align: center;
+}
+
+.sunna-content h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.sunna-content p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* قسم المشاعر */
+.feelings-search {
+    display: flex;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+}
+
+.feelings-search input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--primary-light);
+    border-radius: 25px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.feelings-search input:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+.quick-feelings {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.feeling-tag {
+    background: #f0f0f0;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.feeling-tag:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+}
+
+.ayah-result {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: var(--border-radius);
+    min-height: 150px;
+}
+
+.ayah-text {
+    font-size: 1.8rem;
+    font-family: 'Amiri', serif;
+    color: var(--primary-color);
+    line-height: 2.2;
+    margin-bottom: 1rem;
+}
+
+.ayah-reference {
+    color: var(--gold);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* قسم الأحاديث */
+.hadith-search {
+    display: flex;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.hadith-search input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--primary-light);
+    border-radius: 25px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.hadith-search input:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+.hadith-results {
+    display: grid;
+    gap: 1rem;
+}
+
+.result {
+    display: block;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-right: 4px solid var(--primary-color);
+    font-family: 'Amiri', serif;
+    font-size: 1.1rem;
+    line-height: 2;
+    transition: var(--transition);
+}
+
+.result:hover {
+    transform: translateX(-5px);
+    box-shadow: var(--shadow);
+}
+
+/* التحميل */
+.loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* الفوتر */
+.main-footer {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.main-footer p {
+    margin: 0.3rem 0;
+    opacity: 0.9;
+}
+
+/* قسم آية اليوم */
+.daily-ayah-box {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    text-align: center;
+    min-height: 200px;
+}
+
+.daily-ayah-text {
+    font-size: 1.6rem;
+    font-family: 'Amiri', serif;
+    color: var(--primary-color);
+    line-height: 2.2;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 15px;
+    border: 2px solid var(--gold);
+}
+
+.daily-ayah-reference {
+    color: var(--gold);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.daily-ayah-tafseer {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    text-align: right;
+    border-right: 4px solid var(--primary-color);
+}
+
+.daily-ayah-tafseer h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.ayah-day-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn-arrow {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    background: white;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-arrow:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+#ayah-day-num {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    min-width: 100px;
+}
+
+.ayah-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background: var(--primary-light);
+    color: white;
+}
+
+/* أحاديث رمضان */
+.hadith-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.hadith-tab {
+    padding: 0.7rem 1.2rem;
+    border: 2px solid var(--primary-color);
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    transition: var(--transition);
+}
+
+.hadith-tab:hover, .hadith-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.hadith-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-right: 4px solid var(--gold);
+    transition: var(--transition);
+}
+
+.hadith-item:hover {
+    transform: translateX(-5px);
+    box-shadow: var(--shadow);
+}
+
+.hadith-text {
+    font-size: 1.15rem;
+    font-family: 'Amiri', serif;
+    line-height: 2;
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+}
+
+.hadith-source {
+    display: inline-block;
+    background: var(--primary-light);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+.hadith-search-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--gold);
+}
+
+.hadith-search-section h3 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+/* التجاوب للجوال */
+@media (max-width: 768px) {
+    .header-content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .header-content p {
+        font-size: 0.9rem;
+    }
+    
+    .main-nav {
+        gap: 0.3rem;
+        padding: 0 0.5rem;
+    }
+    
+    .nav-link {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+        border-radius: 15px;
+    }
+    
+    .section {
+        padding: 1.2rem 0.8rem;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+    }
+    
+    .section-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .section-header p {
+        font-size: 0.85rem;
+    }
+    
+    .planner-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .control-group select {
+        width: 100%;
+        padding: 0.7rem 1rem;
+    }
+    
+    .btn {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+    
+    .feelings-search,
+    .hadith-search {
+        flex-direction: column;
+    }
+    
+    .feelings-search input,
+    .hadith-search input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .current-time {
+        font-size: 2.2rem;
+    }
+    
+    .current-period {
+        font-size: 1.1rem;
+    }
+    
+    .ayah-text {
+        font-size: 1.2rem;
+    }
+    
+    .daily-ayah-text {
+        font-size: 1.2rem;
+        padding: 0.8rem;
+    }
+    
+    .plan-container {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .day-card {
+        padding: 0.6rem 0.3rem;
+    }
+    
+    .day-number {
+        font-size: 1.1rem;
+    }
+    
+    .day-reading {
+        font-size: 0.6rem;
+    }
+    
+    .today-reading-box {
+        padding: 1rem;
+    }
+    
+    .today-reading-box h3 {
+        font-size: 1.1rem;
+    }
+    
+    #today-content {
+        font-size: 0.95rem;
+    }
+    
+    .wird-tabs {
+        gap: 0.3rem;
+    }
+    
+    .wird-tab {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .wird-content {
+        padding: 1rem;
+        max-height: 350px;
+    }
+    
+    .wird-item {
+        padding: 1rem;
+    }
+    
+    .wird-text {
+        font-size: 1rem;
+    }
+    
+    .sunnan-box {
+        padding: 1rem;
+    }
+    
+    .sunna-item {
+        padding: 1rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .sunna-icon {
+        min-width: auto;
+    }
+    
+    .quick-feelings {
+        gap: 0.3rem;
+    }
+    
+    .feeling-tag {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.8rem;
+    }
+    
+    .ayah-result {
+        padding: 1.5rem 1rem;
+    }
+    
+    .hadith-tabs {
+        gap: 0.3rem;
+    }
+    
+    .hadith-tab {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+    }
+    
+    .hadith-item {
+        padding: 1rem;
+    }
+    
+    .hadith-text {
+        font-size: 1rem;
+    }
+    
+    .ayah-day-selector {
+        gap: 1rem;
+    }
+    
+    .btn-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    #ayah-day-num {
+        font-size: 1.1rem;
+    }
+    
+    .ayah-navigation {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .ayah-navigation .btn {
+        width: 100%;
+    }
+    
+    .main-footer {
+        padding: 1.5rem 1rem;
+    }
+    
+    .main-footer p {
+        font-size: 0.85rem;
+    }
+}
+
+/* شاشات صغيرة جداً */
+@media (max-width: 400px) {
+    .header-content h1 {
+        font-size: 1.3rem;
+    }
+    
+    .nav-link {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .plan-container {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .day-number {
+        font-size: 0.95rem;
+    }
+    
+    .day-reading {
+        font-size: 0.55rem;
+    }
+}
+
+/* سكرول بار مخصص */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* تأثيرات إضافية */
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* رسالة فارغة */
+.empty-message {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.empty-message i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
