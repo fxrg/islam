@@ -173,24 +173,162 @@ const sunnanData = {
     }
 };
 
-// ===== آيات المشاعر =====
+// ===== آيات المشاعر (متعددة لكل شعور) =====
 const feelingsAyat = {
-    "حزن": [{ ayah: "وَلَا تَهِنُوا وَلَا تَحْزَنُوا وَأَنتُمُ الْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ", reference: "آل عمران: 139" }],
-    "حزين": [{ ayah: "قَالَ إِنَّمَا أَشْكُو بَثِّي وَحُزْنِي إِلَى اللَّهِ", reference: "يوسف: 86" }],
-    "قلق": [{ ayah: "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ", reference: "الرعد: 28" }],
-    "خوف": [{ ayah: "فَاللَّهُ خَيْرٌ حَافِظًا ۖ وَهُوَ أَرْحَمُ الرَّاحِمِينَ", reference: "يوسف: 64" }],
-    "خائف": [{ ayah: "لَا تَخَافُوا وَلَا تَحْزَنُوا وَأَبْشِرُوا بِالْجَنَّةِ الَّتِي كُنتُمْ تُوعَدُونَ", reference: "فصلت: 30" }],
-    "شكر": [{ ayah: "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ", reference: "إبراهيم: 7" }],
-    "شاكر": [{ ayah: "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ", reference: "البقرة: 152" }],
-    "سعيد": [{ ayah: "قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَٰلِكَ فَلْيَفْرَحُوا", reference: "يونس: 58" }],
-    "وحيد": [{ ayah: "وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ الْوَرِيدِ", reference: "ق: 16" }],
-    "ضعيف": [{ ayah: "وَلَا تَهِنُوا وَلَا تَحْزَنُوا وَأَنتُمُ الْأَعْلَوْنَ", reference: "آل عمران: 139" }],
-    "محتاج": [{ ayah: "ادْعُونِي أَسْتَجِبْ لَكُمْ", reference: "غافر: 60" }],
-    "توبة": [{ ayah: "إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا", reference: "الزمر: 53" }],
-    "ذنب": [{ ayah: "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ", reference: "الزمر: 53" }],
-    "يأس": [{ ayah: "وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ", reference: "يوسف: 87" }],
-    "صبر": [{ ayah: "إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ", reference: "الزمر: 10" }],
-    "رزق": [{ ayah: "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", reference: "الطلاق: 3" }]
+    // آيات التطمين والسكينة
+    "تطمين": [
+        { ayah: "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ", reference: "الرعد: 28" },
+        { ayah: "هُوَ الَّذِي أَنزَلَ السَّكِينَةَ فِي قُلُوبِ الْمُؤْمِنِينَ لِيَزْدَادُوا إِيمَانًا مَّعَ إِيمَانِهِمْ", reference: "الفتح: 4" },
+        { ayah: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ", reference: "البقرة: 186" },
+        { ayah: "اللَّهُ وَلِيُّ الَّذِينَ آمَنُوا يُخْرِجُهُم مِّنَ الظُّلُمَاتِ إِلَى النُّورِ", reference: "البقرة: 257" },
+        { ayah: "وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ", reference: "الحديد: 4" }
+    ],
+    "اطمئنان": [
+        { ayah: "يَا أَيَّتُهَا النَّفْسُ الْمُطْمَئِنَّةُ ارْجِعِي إِلَىٰ رَبِّكِ رَاضِيَةً مَّرْضِيَّةً", reference: "الفجر: 27-28" },
+        { ayah: "الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ", reference: "الرعد: 28" },
+        { ayah: "فَأَنزَلَ اللَّهُ سَكِينَتَهُ عَلَيْهِ", reference: "التوبة: 40" }
+    ],
+    // آيات الحزن
+    "حزن": [
+        { ayah: "وَلَا تَهِنُوا وَلَا تَحْزَنُوا وَأَنتُمُ الْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ", reference: "آل عمران: 139" },
+        { ayah: "إِذْ يَقُولُ لِصَاحِبِهِ لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا", reference: "التوبة: 40" },
+        { ayah: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا إِنَّ مَعَ الْعُسْرِ يُسْرًا", reference: "الشرح: 5-6" },
+        { ayah: "سَيَجْعَلُ اللَّهُ بَعْدَ عُسْرٍ يُسْرًا", reference: "الطلاق: 7" }
+    ],
+    "حزين": [
+        { ayah: "قَالَ إِنَّمَا أَشْكُو بَثِّي وَحُزْنِي إِلَى اللَّهِ", reference: "يوسف: 86" },
+        { ayah: "وَابْيَضَّتْ عَيْنَاهُ مِنَ الْحُزْنِ فَهُوَ كَظِيمٌ", reference: "يوسف: 84" },
+        { ayah: "لَا تَدْرِي لَعَلَّ اللَّهَ يُحْدِثُ بَعْدَ ذَٰلِكَ أَمْرًا", reference: "الطلاق: 1" },
+        { ayah: "وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ", reference: "البقرة: 216" }
+    ],
+    // آيات القلق والخوف
+    "قلق": [
+        { ayah: "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ", reference: "الرعد: 28" },
+        { ayah: "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ", reference: "الطلاق: 3" },
+        { ayah: "فَفِرُّوا إِلَى اللَّهِ إِنِّي لَكُم مِّنْهُ نَذِيرٌ مُّبِينٌ", reference: "الذاريات: 50" },
+        { ayah: "قُل لَّن يُصِيبَنَا إِلَّا مَا كَتَبَ اللَّهُ لَنَا", reference: "التوبة: 51" }
+    ],
+    "خوف": [
+        { ayah: "فَاللَّهُ خَيْرٌ حَافِظًا وَهُوَ أَرْحَمُ الرَّاحِمِينَ", reference: "يوسف: 64" },
+        { ayah: "إِنَّ اللَّهَ مَعَ الَّذِينَ اتَّقَوا وَّالَّذِينَ هُم مُّحْسِنُونَ", reference: "النحل: 128" },
+        { ayah: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ", reference: "آل عمران: 173" },
+        { ayah: "وَإِن يَمْسَسْكَ اللَّهُ بِضُرٍّ فَلَا كَاشِفَ لَهُ إِلَّا هُوَ", reference: "الأنعام: 17" }
+    ],
+    "خائف": [
+        { ayah: "لَا تَخَافُوا وَلَا تَحْزَنُوا وَأَبْشِرُوا بِالْجَنَّةِ الَّتِي كُنتُمْ تُوعَدُونَ", reference: "فصلت: 30" },
+        { ayah: "إِنَّ الَّذِينَ قَالُوا رَبُّنَا اللَّهُ ثُمَّ اسْتَقَامُوا تَتَنَزَّلُ عَلَيْهِمُ الْمَلَائِكَةُ أَلَّا تَخَافُوا وَلَا تَحْزَنُوا", reference: "فصلت: 30" },
+        { ayah: "قُلْنَا لَا تَخَفْ إِنَّكَ أَنتَ الْأَعْلَىٰ", reference: "طه: 68" }
+    ],
+    // آيات الشكر
+    "شكر": [
+        { ayah: "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ", reference: "إبراهيم: 7" },
+        { ayah: "وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ", reference: "البقرة: 152" },
+        { ayah: "وَقَلِيلٌ مِّنْ عِبَادِيَ الشَّكُورُ", reference: "سبأ: 13" },
+        { ayah: "اعْمَلُوا آلَ دَاوُودَ شُكْرًا", reference: "سبأ: 13" }
+    ],
+    "شاكر": [
+        { ayah: "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ", reference: "البقرة: 152" },
+        { ayah: "وَمَن شَكَرَ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِ", reference: "النمل: 40" },
+        { ayah: "رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ", reference: "النمل: 19" }
+    ],
+    // آيات الفرح والسعادة
+    "سعيد": [
+        { ayah: "قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَٰلِكَ فَلْيَفْرَحُوا", reference: "يونس: 58" },
+        { ayah: "وَيَوْمَئِذٍ يَفْرَحُ الْمُؤْمِنُونَ بِنَصْرِ اللَّهِ", reference: "الروم: 4-5" },
+        { ayah: "فَرِحِينَ بِمَا آتَاهُمُ اللَّهُ مِن فَضْلِهِ", reference: "آل عمران: 170" }
+    ],
+    "فرح": [
+        { ayah: "قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَٰلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِّمَّا يَجْمَعُونَ", reference: "يونس: 58" },
+        { ayah: "وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ", reference: "الضحى: 11" },
+        { ayah: "يَسْتَبْشِرُونَ بِنِعْمَةٍ مِّنَ اللَّهِ وَفَضْلٍ", reference: "آل عمران: 171" }
+    ],
+    // آيات الوحدة
+    "وحيد": [
+        { ayah: "وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ الْوَرِيدِ", reference: "ق: 16" },
+        { ayah: "وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ", reference: "الحديد: 4" },
+        { ayah: "إِنَّنِي مَعَكُمَا أَسْمَعُ وَأَرَىٰ", reference: "طه: 46" },
+        { ayah: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ", reference: "البقرة: 186" }
+    ],
+    "وحدة": [
+        { ayah: "لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا", reference: "التوبة: 40" },
+        { ayah: "إِنَّ رَحْمَتَ اللَّهِ قَرِيبٌ مِّنَ الْمُحْسِنِينَ", reference: "الأعراف: 56" },
+        { ayah: "فَإِنَّكَ بِأَعْيُنِنَا", reference: "الطور: 48" }
+    ],
+    // آيات الضعف والقوة
+    "ضعيف": [
+        { ayah: "وَلَا تَهِنُوا وَلَا تَحْزَنُوا وَأَنتُمُ الْأَعْلَوْنَ", reference: "آل عمران: 139" },
+        { ayah: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ", reference: "البقرة: 153" },
+        { ayah: "وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ", reference: "النحل: 127" },
+        { ayah: "رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ", reference: "البقرة: 286" }
+    ],
+    // آيات الحاجة والدعاء
+    "محتاج": [
+        { ayah: "ادْعُونِي أَسْتَجِبْ لَكُمْ", reference: "غافر: 60" },
+        { ayah: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ", reference: "البقرة: 186" },
+        { ayah: "أَمَّن يُجِيبُ الْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ السُّوءَ", reference: "النمل: 62" },
+        { ayah: "وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ", reference: "غافر: 60" }
+    ],
+    // آيات التوبة والمغفرة
+    "توبة": [
+        { ayah: "إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ", reference: "الزمر: 53" },
+        { ayah: "وَمَن يَعْمَلْ سُوءًا أَوْ يَظْلِمْ نَفْسَهُ ثُمَّ يَسْتَغْفِرِ اللَّهَ يَجِدِ اللَّهَ غَفُورًا رَّحِيمًا", reference: "النساء: 110" },
+        { ayah: "وَتُوبُوا إِلَى اللَّهِ جَمِيعًا أَيُّهَ الْمُؤْمِنُونَ لَعَلَّكُمْ تُفْلِحُونَ", reference: "النور: 31" },
+        { ayah: "إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ وَيُحِبُّ الْمُتَطَهِّرِينَ", reference: "البقرة: 222" }
+    ],
+    "ذنب": [
+        { ayah: "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا", reference: "الزمر: 53" },
+        { ayah: "وَالَّذِينَ إِذَا فَعَلُوا فَاحِشَةً أَوْ ظَلَمُوا أَنفُسَهُمْ ذَكَرُوا اللَّهَ فَاسْتَغْفَرُوا لِذُنُوبِهِمْ", reference: "آل عمران: 135" },
+        { ayah: "قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ", reference: "الزمر: 53" }
+    ],
+    // آيات اليأس والأمل
+    "يأس": [
+        { ayah: "وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ إِنَّهُ لَا يَيْأَسُ مِن رَّوْحِ اللَّهِ إِلَّا الْقَوْمُ الْكَافِرُونَ", reference: "يوسف: 87" },
+        { ayah: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا", reference: "الشرح: 5" },
+        { ayah: "سَيَجْعَلُ اللَّهُ بَعْدَ عُسْرٍ يُسْرًا", reference: "الطلاق: 7" },
+        { ayah: "لَا تَدْرِي لَعَلَّ اللَّهَ يُحْدِثُ بَعْدَ ذَٰلِكَ أَمْرًا", reference: "الطلاق: 1" }
+    ],
+    "أمل": [
+        { ayah: "إِنَّهُ لَا يَيْأَسُ مِن رَّوْحِ اللَّهِ إِلَّا الْقَوْمُ الْكَافِرُونَ", reference: "يوسف: 87" },
+        { ayah: "فَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَيَجْعَلَ اللَّهُ فِيهِ خَيْرًا كَثِيرًا", reference: "النساء: 19" },
+        { ayah: "وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ", reference: "البقرة: 216" }
+    ],
+    // آيات الصبر
+    "صبر": [
+        { ayah: "إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ", reference: "الزمر: 10" },
+        { ayah: "وَاصْبِرْ فَإِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ", reference: "هود: 115" },
+        { ayah: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ", reference: "البقرة: 153" },
+        { ayah: "فَاصْبِرْ صَبْرًا جَمِيلًا", reference: "المعارج: 5" },
+        { ayah: "وَبَشِّرِ الصَّابِرِينَ", reference: "البقرة: 155" }
+    ],
+    // آيات الرزق
+    "رزق": [
+        { ayah: "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ", reference: "الطلاق: 3" },
+        { ayah: "وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا", reference: "الطلاق: 2" },
+        { ayah: "إِنَّ اللَّهَ هُوَ الرَّزَّاقُ ذُو الْقُوَّةِ الْمَتِينُ", reference: "الذاريات: 58" },
+        { ayah: "وَفِي السَّمَاءِ رِزْقُكُمْ وَمَا تُوعَدُونَ", reference: "الذاريات: 22" }
+    ],
+    // آيات المرض والشفاء
+    "مريض": [
+        { ayah: "وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ", reference: "الشعراء: 80" },
+        { ayah: "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ", reference: "الإسراء: 82" },
+        { ayah: "رَبِّ إِنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ", reference: "الأنبياء: 83" }
+    ],
+    "مرض": [
+        { ayah: "وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ", reference: "الشعراء: 80" },
+        { ayah: "وَيَشْفِ صُدُورَ قَوْمٍ مُّؤْمِنِينَ", reference: "التوبة: 14" },
+        { ayah: "قُلْ هُوَ لِلَّذِينَ آمَنُوا هُدًى وَشِفَاءٌ", reference: "فصلت: 44" }
+    ],
+    // آيات الهم والكرب
+    "هم": [
+        { ayah: "فَنَادَىٰ فِي الظُّلُمَاتِ أَن لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ فَاسْتَجَبْنَا لَهُ وَنَجَّيْنَاهُ مِنَ الْغَمِّ", reference: "الأنبياء: 87-88" },
+        { ayah: "أَمَّن يُجِيبُ الْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ السُّوءَ", reference: "النمل: 62" },
+        { ayah: "وَنَجِّنِي مِنَ الْقَوْمِ الظَّالِمِينَ", reference: "التحريم: 11" }
+    ],
+    "ضيق": [
+        { ayah: "وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا", reference: "الطلاق: 2" },
+        { ayah: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا إِنَّ مَعَ الْعُسْرِ يُسْرًا", reference: "الشرح: 5-6" },
+        { ayah: "سَيَجْعَلُ اللَّهُ بَعْدَ عُسْرٍ يُسْرًا", reference: "الطلاق: 7" }
+    ]
 };
 
 // ===== متغيرات عامة =====
@@ -198,29 +336,70 @@ let currentAyahDay = 1;
 
 // ===== دوال التهيئة =====
 document.addEventListener('DOMContentLoaded', function() {
-    initDaySelector();
-    showWird('morning');
-    updateTime();
-    setInterval(updateTime, 60000);
-    generatePlan();
-    showDailyAyah(1);
-    showHadithCategory('ramadan');
-    
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function() {
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
+    try {
+        initDaySelector();
+        showWird('morning');
+        generatePlan();
+        showDailyAyah(1);
+        showHadithCategory('ramadan');
+        
+        // تحديث الوقت فوراً ثم كل دقيقة
+        updateTimeNow();
+        setInterval(updateTimeNow, 60000);
+        
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
         });
-    });
 
-    document.getElementById('skey').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') check_hadith();
-    });
-    
-    document.getElementById('feeling-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') findAyah();
-    });
+        const skeyInput = document.getElementById('skey');
+        if (skeyInput) {
+            skeyInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') check_hadith();
+            });
+        }
+        
+        const feelingInput = document.getElementById('feeling-input');
+        if (feelingInput) {
+            feelingInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') findAyah();
+            });
+        }
+    } catch (error) {
+        console.error('خطأ في التهيئة:', error);
+    }
 });
+
+// دالة تحديث الوقت المحسنة
+function updateTimeNow() {
+    try {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        
+        const timeElement = document.getElementById('current-time');
+        const periodElement = document.getElementById('current-period');
+        const sunnanContent = document.getElementById('sunnan-content');
+        
+        if (timeElement) {
+            timeElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+        
+        const period = getTimePeriod(hours);
+        
+        if (periodElement && sunnanData[period]) {
+            periodElement.textContent = sunnanData[period].period;
+        }
+        
+        if (sunnanContent) {
+            displaySunnan(period);
+        }
+    } catch (error) {
+        console.error('خطأ في تحديث الوقت:', error);
+    }
+}
 
 // ===== دوال خطة الختم =====
 function initDaySelector() {
@@ -323,12 +502,22 @@ function todayAyah() {
 }
 
 // ===== دوال الأذكار =====
-function showWird(type) {
+function showWird(type, clickedElement) {
     const tabs = document.querySelectorAll('.wird-tab');
     tabs.forEach(tab => tab.classList.remove('active'));
-    if (event && event.target) event.target.classList.add('active');
+    
+    // تفعيل التاب المحدد
+    if (clickedElement) {
+        clickedElement.classList.add('active');
+    } else {
+        // تفعيل التاب الأول عند التحميل
+        const firstTab = document.querySelector('.wird-tab');
+        if (firstTab) firstTab.classList.add('active');
+    }
     
     const container = document.getElementById('wird-content');
+    if (!container || !adhkarData[type]) return;
+    
     const adhkar = adhkarData[type];
     
     let html = '';
@@ -344,17 +533,7 @@ function showWird(type) {
 
 // ===== دوال سنن الوقت =====
 function updateTime() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    
-    document.getElementById('current-time').textContent = 
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    
-    const period = getTimePeriod(hours);
-    document.getElementById('current-period').textContent = sunnanData[period].period;
-    
-    displaySunnan(period);
+    updateTimeNow();
 }
 
 function getTimePeriod(hours) {
@@ -369,6 +548,13 @@ function getTimePeriod(hours) {
 
 function displaySunnan(period) {
     const container = document.getElementById('sunnan-content');
+    
+    // التحقق من وجود البيانات
+    if (!sunnanData[period] || !sunnanData[period].sunnan) {
+        container.innerHTML = '<div class="empty-message"><p>لا توجد سنن محددة لهذا الوقت</p></div>';
+        return;
+    }
+    
     const sunnan = sunnanData[period].sunnan;
     
     let html = '';
@@ -402,36 +588,70 @@ function quickFeeling(feeling) {
 
 function searchFeeling(feeling) {
     const container = document.getElementById('ayah-result');
-    let foundAyat = null;
+    let allMatchedAyat = [];
     
+    // البحث في جميع المشاعر المطابقة
     for (const [key, ayat] of Object.entries(feelingsAyat)) {
         if (feeling.includes(key) || key.includes(feeling)) {
-            foundAyat = ayat;
-            break;
+            allMatchedAyat = allMatchedAyat.concat(ayat);
         }
     }
     
-    if (foundAyat) {
-        const randomAyah = foundAyat[Math.floor(Math.random() * foundAyat.length)];
-        container.innerHTML = `<div class="fade-in">
-            <p class="ayah-text">﴿ ${randomAyah.ayah} ﴾</p>
-            <p class="ayah-reference">📖 ${randomAyah.reference}</p>
-        </div>`;
+    // إزالة التكرارات
+    const uniqueAyat = allMatchedAyat.filter((ayah, index, self) =>
+        index === self.findIndex((a) => a.ayah === ayah.ayah)
+    );
+    
+    if (uniqueAyat.length > 0) {
+        // عرض آيات متعددة (حتى 3 آيات)
+        const ayatToShow = uniqueAyat.sort(() => Math.random() - 0.5).slice(0, 3);
+        
+        let html = '<div class="fade-in">';
+        ayatToShow.forEach((ayah, index) => {
+            html += `
+                <div class="feeling-ayah-item ${index > 0 ? 'mt-2' : ''}">
+                    <p class="ayah-text">﴿ ${ayah.ayah} ﴾</p>
+                    <p class="ayah-reference">📖 ${ayah.reference}</p>
+                </div>
+                ${index < ayatToShow.length - 1 ? '<hr class="ayah-divider">' : ''}
+            `;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
     } else {
+        // آية افتراضية للتطمين
         container.innerHTML = `<div class="fade-in">
-            <p class="ayah-text">﴿ وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ﴾</p>
-            <p class="ayah-reference">📖 البقرة: 186</p>
+            <div class="feeling-ayah-item">
+                <p class="ayah-text">﴿ وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ ﴾</p>
+                <p class="ayah-reference">📖 البقرة: 186</p>
+            </div>
+            <hr class="ayah-divider">
+            <div class="feeling-ayah-item">
+                <p class="ayah-text">﴿ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ ﴾</p>
+                <p class="ayah-reference">📖 الرعد: 28</p>
+            </div>
         </div>`;
     }
 }
 
 // ===== دوال الأحاديث =====
-function showHadithCategory(category) {
+function showHadithCategory(category, clickedElement) {
     const tabs = document.querySelectorAll('.hadith-tab');
     tabs.forEach(tab => tab.classList.remove('active'));
-    if (event && event.target) event.target.classList.add('active');
+    
+    // تفعيل التاب المحدد
+    if (clickedElement) {
+        clickedElement.classList.add('active');
+    } else {
+        // تفعيل التاب الأول عند التحميل
+        const firstTab = document.querySelector('.hadith-tab');
+        if (firstTab) firstTab.classList.add('active');
+    }
     
     const container = document.getElementById('hadith-content');
+    if (!container || !ramadanHadith[category]) return;
+    
     const hadiths = ramadanHadith[category];
     
     let html = '';
@@ -457,56 +677,137 @@ function check_hadith() {
     document.getElementById('hadith-loading').style.display = 'block';
     document.getElementById('dorar').innerHTML = '';
     
-    const callbackName = 'hadithCallback_' + Date.now();
-    
-    window[callbackName] = function(data) {
-        document.getElementById('hadith-loading').style.display = 'none';
-        
-        if (data && data.ahadith && data.ahadith.length > 0) {
-            let html = '';
-            data.ahadith.forEach(function(item) {
-                html += `<div class="hadith-item fade-in">
-                    <div class="hadith-text">${item.th || item}</div>
-                </div>`;
-            });
-            document.getElementById('dorar').innerHTML = html;
-        } else {
-            document.getElementById('dorar').innerHTML = `
-                <div class="empty-message">
-                    <span style="font-size:2.5rem;">📚</span>
-                    <p>لم يتم العثور على نتائج</p>
-                </div>`;
-        }
-        
-        delete window[callbackName];
-        const script = document.getElementById('jsonp-script');
-        if (script) script.remove();
-    };
-    
-    const script = document.createElement('script');
-    script.id = 'jsonp-script';
-    script.src = `https://dorar.net/dorar_api.json?skey=${encodeURIComponent(searchKey)}&callback=${callbackName}`;
-    
-    script.onerror = function() {
-        document.getElementById('hadith-loading').style.display = 'none';
-        document.getElementById('dorar').innerHTML = `
-            <div class="empty-message">
-                <span style="font-size:2.5rem;">⚠️</span>
-                <p>خطأ في الاتصال، جرب لاحقاً</p>
-            </div>`;
-        delete window[callbackName];
-    };
-    
-    document.body.appendChild(script);
+    // رابط البحث في موقع الدرر السنية
+    const dorarSearchUrl = `https://dorar.net/hadith/search?q=${encodeURIComponent(searchKey)}`;
     
     setTimeout(function() {
-        if (document.getElementById('hadith-loading').style.display !== 'none') {
-            document.getElementById('hadith-loading').style.display = 'none';
-            document.getElementById('dorar').innerHTML = `
-                <div class="empty-message">
-                    <span style="font-size:2.5rem;">⏱️</span>
-                    <p>انتهت المهلة، جرب مرة أخرى</p>
+        document.getElementById('hadith-loading').style.display = 'none';
+        document.getElementById('dorar').innerHTML = `
+            <div class="dorar-search-result">
+                <div class="dorar-link-box">
+                    <p>🔍 نتائج البحث عن "<strong>${searchKey}</strong>"</p>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem;">
+                        اضغط على الزر أدناه لفتح نتائج البحث في موقع الدرر السنية
+                    </p>
+                    <a href="${dorarSearchUrl}" target="_blank" class="btn btn-primary dorar-link" onclick="window.open('${dorarSearchUrl}', '_blank')">
+                        📚 فتح نتائج البحث في الدرر السنية ←
+                    </a>
+                </div>
+                <div class="local-hadith-results">
+                    <h4 style="margin-bottom: 1rem; color: var(--primary-color);">💡 أحاديث ذات صلة من مكتبتنا:</h4>
+                    ${searchLocalHadith(searchKey)}
+                </div>
+            </div>
+        `;
+    }, 300);
+}
+
+// البحث في الأحاديث المحلية (بحث جزئي محسن)
+function searchLocalHadith(searchKey) {
+    let results = [];
+    const searchWords = searchKey.split(' ').filter(w => w.length > 1);
+    
+    // البحث في جميع الفئات
+    for (const category in ramadanHadith) {
+        ramadanHadith[category].forEach(hadith => {
+            // البحث عن الكلمة كاملة أو أي كلمة من كلمات البحث
+            const hadithText = hadith.text.toLowerCase();
+            const searchLower = searchKey.toLowerCase();
+            
+            // البحث الكامل
+            if (hadithText.includes(searchLower)) {
+                results.push({ ...hadith, score: 10 });
+            } else {
+                // البحث الجزئي (كلمات منفصلة)
+                let matchCount = 0;
+                searchWords.forEach(word => {
+                    if (hadithText.includes(word.toLowerCase())) {
+                        matchCount++;
+                    }
+                });
+                if (matchCount > 0) {
+                    results.push({ ...hadith, score: matchCount });
+                }
+            }
+        });
+    }
+    
+    // ترتيب حسب الصلة وإزالة التكرارات
+    results.sort((a, b) => b.score - a.score);
+    const uniqueResults = results.filter((item, index, self) => 
+        index === self.findIndex(t => t.text === item.text)
+    );
+    
+    if (uniqueResults.length > 0) {
+        let html = '';
+        uniqueResults.slice(0, 5).forEach(hadith => {
+            html += `<div class="hadith-item fade-in">
+                <div class="hadith-text">${hadith.text}</div>
+                <span class="hadith-source">${hadith.source}</span>
+            </div>`;
+        });
+        return html;
+    } else {
+        return `<p style="color: var(--text-secondary); text-align: center;">لا توجد أحاديث محلية مطابقة، جرب البحث في الدرر السنية</p>`;
+    }
+}
+
+// دالة عرض نتائج الأحاديث (HTML من الدرر)
+function displayHadithResults(htmlContent) {
+    // إنشاء عنصر مؤقت لتحليل HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    
+    // البحث عن الأحاديث في الـ HTML
+    const hadithElements = tempDiv.querySelectorAll('.hadith, .result-item, p');
+    
+    if (hadithElements.length > 0) {
+        let html = '';
+        hadithElements.forEach(function(elem) {
+            const text = elem.textContent.trim();
+            if (text.length > 20) {
+                html += `<div class="hadith-item fade-in">
+                    <div class="hadith-text">${text}</div>
                 </div>`;
+            }
+        });
+        
+        if (html) {
+            document.getElementById('dorar').innerHTML = html;
+        } else {
+            // عرض المحتوى كما هو
+            document.getElementById('dorar').innerHTML = `<div class="hadith-results-raw">${htmlContent}</div>`;
         }
-    }, 15000);
+    } else {
+        // عرض المحتوى كما هو
+        document.getElementById('dorar').innerHTML = `<div class="hadith-results-raw">${htmlContent}</div>`;
+    }
+}
+
+// دالة بديلة لعرض نتائج الأحاديث
+function displayHadithResultsAlt(ahadithData) {
+    let html = '';
+    
+    if (Array.isArray(ahadithData)) {
+        ahadithData.forEach(function(item) {
+            const text = item.hadith || item.th || item.text || item;
+            if (typeof text === 'string' && text.length > 10) {
+                html += `<div class="hadith-item fade-in">
+                    <div class="hadith-text">${text}</div>
+                </div>`;
+            }
+        });
+    } else if (typeof ahadithData === 'string') {
+        html = `<div class="hadith-results-raw">${ahadithData}</div>`;
+    }
+    
+    if (html) {
+        document.getElementById('dorar').innerHTML = html;
+    } else {
+        document.getElementById('dorar').innerHTML = `
+            <div class="empty-message">
+                <span style="font-size:2.5rem;">📚</span>
+                <p>لم يتم العثور على نتائج</p>
+            </div>`;
+    }
 }

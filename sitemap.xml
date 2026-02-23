@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- الصفحة الرئيسية -->
+    <url>
+        <loc>https://fxrg.github.io/islam/</loc>
+        <lastmod>2026-02-23</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- قسم خطة الختم -->
+    <url>
+        <loc>https://fxrg.github.io/islam/#planner</loc>
+        <lastmod>2026-02-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- قسم آية اليوم -->
+    <url>
+        <loc>https://fxrg.github.io/islam/#daily-ayah</loc>
+        <lastmod>2026-02-23</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- قسم الأذكار -->
+    <url>
+        <loc>https://fxrg.github.io/islam/#daily-wird</loc>
+        <lastmod>2026-02-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- قسم السنن -->
+    <url>
+        <loc>https://fxrg.github.io/islam/#sunnan</loc>
+        <lastmod>2026-02-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- قسم المشاعر -->
+    <url>
+        <loc>https://fxrg.github.io/islam/#feelings</loc>
+        <lastmod>2026-02-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- قسم الأحاديث -->
+    <url>
+        <loc>https://fxrg.github.io/islam/#hadith</loc>
+        <lastmod>2026-02-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+</urlset>

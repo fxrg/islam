@@ -1,0 +1,59 @@
+{
+    "name": "رفيق رمضان - موقعك الإسلامي الشامل",
+    "short_name": "رفيق رمضان",
+    "description": "موقعك الإسلامي الشامل لشهر رمضان المبارك. خطة ختم القرآن، أذكار الصباح والمساء، آيات يومية، أحاديث نبوية صحيحة.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f5f1eb",
+    "theme_color": "#1a5f4a",
+    "orientation": "portrait-primary",
+    "lang": "ar",
+    "dir": "rtl",
+    "categories": ["education", "lifestyle", "books"],
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a5f4a'/><circle cx='50' cy='50' r='35' fill='%23f4d35e'/><circle cx='62' cy='42' r='25' fill='%231a5f4a'/></svg>",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a5f4a'/><circle cx='50' cy='50' r='35' fill='%23f4d35e'/><circle cx='62' cy='42' r='25' fill='%231a5f4a'/></svg>",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "screenshot1.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "الصفحة الرئيسية لرفيق رمضان"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "أذكار الصباح",
+            "short_name": "الصباح",
+            "description": "أذكار الصباح اليومية",
+            "url": "/#daily-wird",
+            "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>", "sizes": "96x96" }]
+        },
+        {
+            "name": "آية اليوم",
+            "short_name": "آية",
+            "description": "آية اليوم مع التفسير",
+            "url": "/#daily-ayah",
+            "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>", "sizes": "96x96" }]
+        },
+        {
+            "name": "خطة الختم",
+            "short_name": "الختم",
+            "description": "خطة ختم القرآن",
+            "url": "/#planner",
+            "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>", "sizes": "96x96" }]
+        }
+    ]
+}

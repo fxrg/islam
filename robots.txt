@@ -1,0 +1,26 @@
+# robots.txt for رفيق رمضان
+# https://fxrg.github.io/islam/
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://fxrg.github.io/islam/sitemap.xml
+
+# Crawl-delay (optional, some bots respect this)
+Crawl-delay: 1
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+
+# Bing specific
+User-agent: Bingbot
+Allow: /
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

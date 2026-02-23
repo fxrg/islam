@@ -42,6 +42,27 @@ body {
     box-shadow: var(--shadow);
 }
 
+/* الشعار */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.site-logo {
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+    animation: moonGlow 3s ease-in-out infinite;
+}
+
+@keyframes moonGlow {
+    0%, 100% {
+        filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+    }
+    50% {
+        filter: drop-shadow(2px 4px 15px rgba(244, 211, 94, 0.6));
+    }
+}
+
 .header-content h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
@@ -959,4 +980,98 @@ body {
     font-size: 3rem;
     margin-bottom: 1rem;
     display: block;
+}
+
+/* أنماط آيات المشاعر المتعددة */
+.feeling-ayah-item {
+    padding: 1rem 0;
+}
+
+.feeling-ayah-item.mt-2 {
+    margin-top: 1rem;
+}
+
+.ayah-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 1rem 0;
+}
+
+/* أنماط نتائج الأحاديث من الدرر */
+.hadith-results-raw {
+    padding: 1rem;
+    line-height: 2;
+    text-align: right;
+}
+
+.hadith-results-raw p {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-right: 4px solid var(--primary-color);
+}
+
+.hadith-results-raw .hadith {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-right: 4px solid var(--gold);
+}
+
+.hadith-results-raw a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.hadith-results-raw a:hover {
+    text-decoration: underline;
+}
+
+/* أنماط البحث في الدرر السنية */
+.dorar-search-result {
+    padding: 1rem;
+}
+
+.dorar-link-box {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--gold);
+}
+
+.dorar-link-box p {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.dorar-link {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    text-decoration: none;
+    margin-top: 0.5rem;
+}
+
+.local-hadith-results {
+    padding: 1rem;
+    background: #fafafa;
+    border-radius: 15px;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .dorar-link-box {
+        padding: 1rem;
+    }
+    
+    .dorar-link {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
 }
