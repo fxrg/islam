@@ -1,3 +1,6 @@
+<div align="center">
+
+<img src="logo.png" width="200" height="200" alt="rafiq ramadan Icon" />
 <div dir="rtl" align="center">
 
 # 🌙 رفيق رمضان
