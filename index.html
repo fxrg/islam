@@ -148,9 +148,20 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+    <!-- زر تبديل الوضع الليلي -->
+    <button id="theme-toggle" class="theme-toggle" onclick="toggleDarkMode()" title="تبديل الوضع الليلي">
+        <span class="theme-icon">🌙</span>
+    </button>
+
     <!-- الهيدر -->
     <header class="main-header">
         <div class="header-content">
+            <!-- زر القائمة للجوال -->
+            <button class="burger-menu" onclick="toggleMobileMenu()" aria-label="القائمة">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <div class="logo-container">
                 <svg class="site-logo" viewBox="0 0 100 100" width="60" height="60">
                     <defs>
@@ -166,17 +177,240 @@
             <h1>رفيق رمضان</h1>
             <p>موقعك الإسلامي الشامل لشهر رمضان المبارك</p>
         </div>
-        <nav class="main-nav" aria-label="التنقل الرئيسي">
-            <a href="#planner" class="nav-link active" aria-current="page">📖 الختم</a>
-            <a href="#daily-ayah" class="nav-link">📜 آية اليوم</a>
-            <a href="#daily-wird" class="nav-link">📿 الأذكار</a>
-            <a href="#sunnan" class="nav-link">☀️ السنن</a>
-            <a href="#feelings" class="nav-link">💚 مشاعرك</a>
-            <a href="#hadith" class="nav-link">📚 الأحاديث</a>
+        <nav class="main-nav" id="main-nav" aria-label="التنقل الرئيسي">
+            <a href="#quran-browser" class="nav-link active" aria-current="page" onclick="closeMobileMenu()">📕 القرآن</a>
+            <a href="#planner" class="nav-link" onclick="closeMobileMenu()">📖 الختم</a>
+            <a href="#daily-ayah" class="nav-link" onclick="closeMobileMenu()">📜 آية اليوم</a>
+            <a href="#daily-wird" class="nav-link" onclick="closeMobileMenu()">📿 الأذكار</a>
+            <a href="#sunnan" class="nav-link" onclick="closeMobileMenu()">☀️ السنن</a>
+            <a href="#feelings" class="nav-link" onclick="closeMobileMenu()">💚 مشاعرك</a>
+            <a href="#hadith" class="nav-link" onclick="closeMobileMenu()">📚 الأحاديث</a>
         </nav>
+        <!-- أوفرلاي للقائمة -->
+        <div class="nav-overlay" onclick="closeMobileMenu()"></div>
     </header>
 
     <main class="container">
+        <!-- قسم تصفح القرآن الكريم -->
+        <section id="quran-browser" class="section">
+            <div class="section-header">
+                <h2>📕 القرآن الكريم</h2>
+                <p>تصفح واقرأ القرآن الكريم كاملاً مع البحث والإشارات المرجعية وتتبع تقدم الحفظ</p>
+            </div>
+
+            <!-- شريط التقدم في الحفظ -->
+            <div class="hifz-progress-container">
+                <div class="hifz-stats">
+                    <span class="hifz-stat">
+                        <span class="stat-icon">📖</span>
+                        <span class="stat-label">السور المحفوظة:</span>
+                        <span id="hifz-surah-count" class="stat-value">0/114</span>
+                    </span>
+                    <span class="hifz-stat">
+                        <span class="stat-icon">📄</span>
+                        <span class="stat-label">الآيات المحفوظة:</span>
+                        <span id="hifz-ayah-count" class="stat-value">0/6236</span>
+                    </span>
+                    <span class="hifz-stat">
+                        <span class="stat-icon">📊</span>
+                        <span class="stat-label">نسبة الإنجاز:</span>
+                        <span id="hifz-percentage" class="stat-value">0%</span>
+                    </span>
+                </div>
+                <div class="hifz-progress-bar">
+                    <div id="hifz-progress-fill" class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- تبويبات التصفح -->
+            <div class="quran-tabs">
+                <button class="quran-tab active" onclick="showQuranTab('surahs', this)">📚 السور</button>
+                <button class="quran-tab" onclick="showQuranTab('juz', this)">📖 الأجزاء</button>
+                <button class="quran-tab" onclick="showQuranTab('pages', this)">📄 الصفحات</button>
+                <button class="quran-tab" onclick="showQuranTab('bookmarks', this)">🔖 المحفوظات</button>
+                <button class="quran-tab" onclick="showQuranTab('review', this)">📋 للمراجعة</button>
+                <button class="quran-tab" onclick="showQuranTab('search', this)">🔍 بحث</button>
+            </div>
+
+            <!-- محتوى التبويبات -->
+            <div id="quran-tabs-content">
+                <!-- قائمة السور -->
+                <div id="surahs-tab" class="quran-tab-content active">
+                    <div class="surah-filter">
+                        <input type="text" id="surah-search" placeholder="ابحث عن سورة..." oninput="filterSurahs()">
+                        <div class="filter-buttons">
+                            <button onclick="filterByType('all')" class="filter-btn active">الكل</button>
+                            <button onclick="filterByType('meccan')" class="filter-btn">مكية</button>
+                            <button onclick="filterByType('medinan')" class="filter-btn">مدنية</button>
+                        </div>
+                    </div>
+                    <div id="surahs-list" class="surahs-grid">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </div>
+                </div>
+
+                <!-- قائمة الأجزاء -->
+                <div id="juz-tab" class="quran-tab-content">
+                    <div id="juz-list" class="juz-grid">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </div>
+                </div>
+
+                <!-- قائمة الصفحات -->
+                <div id="pages-tab" class="quran-tab-content">
+                    <div class="page-navigation">
+                        <button onclick="goToPage(1)" class="btn btn-secondary">البداية</button>
+                        <input type="number" id="page-input" min="1" max="604" value="1" placeholder="رقم الصفحة">
+                        <button onclick="goToPageInput()" class="btn btn-primary">اذهب</button>
+                        <button onclick="goToPage(604)" class="btn btn-secondary">النهاية</button>
+                    </div>
+                    <div id="pages-list" class="pages-grid">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </div>
+                </div>
+
+                <!-- المحفوظات (الإشارات المرجعية) -->
+                <div id="bookmarks-tab" class="quran-tab-content">
+                    <div class="bookmarks-header">
+                        <h3>🔖 إشاراتك المرجعية</h3>
+                        <button onclick="clearAllBookmarks()" class="btn btn-danger btn-small">حذف الكل</button>
+                    </div>
+                    <div id="bookmarks-list" class="bookmarks-list">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </div>
+                </div>
+
+                <!-- البحث -->
+                <div id="search-tab" class="quran-tab-content">
+                    <div class="quran-search-box">
+                        <input type="text" id="quran-search-input" placeholder="ابحث في القرآن الكريم..." onkeypress="if(event.key==='Enter') searchQuran()">
+                        <button onclick="searchQuran()" class="btn btn-primary">🔍 بحث</button>
+                    </div>
+                    <div id="search-results" class="search-results">
+                        <p class="empty-search">ابحث عن كلمة أو جملة في القرآن الكريم</p>
+                    </div>
+                </div>
+
+                <!-- آيات للمراجعة -->
+                <div id="review-tab" class="quran-tab-content">
+                    <div class="review-header">
+                        <h3>📋 آيات تحتاج مراجعة</h3>
+                        <div class="review-filters">
+                            <button onclick="filterReviewByStatus('all')" class="filter-btn active">الكل</button>
+                            <button onclick="filterReviewByStatus('needs-review')" class="filter-btn">تحتاج مراجعة</button>
+                            <button onclick="filterReviewByStatus('learning')" class="filter-btn">قيد الحفظ</button>
+                            <button onclick="filterReviewByStatus('difficult')" class="filter-btn">صعبة</button>
+                        </div>
+                    </div>
+                    <div id="review-list" class="review-list">
+                        <p class="empty-review">لا توجد آيات للمراجعة حالياً<br>انقر على أي آية أثناء القراءة لتحديد حالتها</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- عرض القراءة بتصميم المصحف -->
+            <div id="quran-reader" class="quran-reader" style="display: none;">
+                <div class="reader-header">
+                    <button onclick="closeReader()" class="btn-close">✕</button>
+                    <div class="reader-title">
+                        <h3 id="reader-surah-name">سورة الفاتحة</h3>
+                        <span id="reader-surah-info">مكية - 7 آيات</span>
+                    </div>
+                    <div class="reader-actions">
+                        <button onclick="toggleBookmark()" id="bookmark-btn" class="action-btn" title="إضافة إشارة مرجعية">🔖</button>
+                        <button onclick="saveEntirePage()" id="save-page-btn" class="action-btn save-page-btn" title="حفظ كل الصفحة">💾</button>
+                        <button onclick="toggleTranslation()" id="translation-btn" class="action-btn" title="إظهار الترجمة">🌐</button>
+                        <button onclick="togglePageView()" id="page-view-btn" class="action-btn" title="عرض الصفحة">📄</button>
+                        <button onclick="changeFontSize(1)" class="action-btn" title="تكبير الخط">+</button>
+                        <button onclick="changeFontSize(-1)" class="action-btn" title="تصغير الخط">-</button>
+                    </div>
+                </div>
+                
+                <div class="reader-navigation">
+                    <button onclick="previousSurah()" class="nav-btn" title="السورة السابقة">→ السابقة</button>
+                    <span id="current-position">سورة 1 من 114</span>
+                    <button onclick="nextSurah()" class="nav-btn" title="السورة التالية">التالية ←</button>
+                </div>
+
+                <!-- اختيار لغة الترجمة -->
+                <div id="translation-settings" class="translation-settings" style="display: none;">
+                    <span class="translation-label">🌐 لغة الترجمة:</span>
+                    <select id="translation-lang" onchange="changeTranslation()">
+                        <option value="eng-abdulhye">English - Abdul Hye</option>
+                        <option value="tur-osmanfikrdo">Türkçe - Ömer Nasuhi Bilmen</option>
+                        <option value="fra-hamidullah">Français - Hamidullah</option>
+                        <option value="urd-fateh">اردو - فتح محمد جالندهری</option>
+                        <option value="ind-sabiq">Bahasa Indonesia - Sabiq</option>
+                        <option value="rus-abuadel">Русский - Abu Adel</option>
+                    </select>
+                </div>
+
+                <div id="quran-loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>جاري تحميل القرآن الكريم...</p>
+                </div>
+
+                <!-- عرض المصحف بتقليب الصفحات -->
+                <div id="mushaf-container" class="mushaf-container">
+                    <div class="mushaf-book" id="mushaf-book">
+                        <div class="page page-left" id="page-left">
+                            <div class="page-content" id="page-left-content"></div>
+                            <div class="page-number" id="page-left-num"></div>
+                        </div>
+                        <div class="page page-right" id="page-right">
+                            <div class="page-content" id="page-right-content"></div>
+                            <div class="page-number" id="page-right-num"></div>
+                        </div>
+                    </div>
+                    <!-- أزرار التنقل -->
+                    <button class="page-nav-btn prev-btn" onclick="flipPagePrev()">❮</button>
+                    <button class="page-nav-btn next-btn" onclick="flipPageNext()">❯</button>
+                </div>
+
+                <!-- عرض عادي للآيات -->
+                <div id="quran-content" class="quran-content" style="display: none;">
+                    <!-- سيتم عرض الآيات هنا -->
+                </div>
+
+                <div class="reader-footer">
+                    <button onclick="previousSurah()" class="btn btn-secondary">→ السابقة</button>
+                    <button onclick="scrollToTop()" class="btn btn-primary">⬆️ الأعلى</button>
+                    <button onclick="nextSurah()" class="btn btn-secondary">التالية ←</button>
+                </div>
+            </div>
+
+            <!-- نافذة حالة الآية -->
+            <div id="ayah-status-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>حالة الآية</h3>
+                        <button onclick="closeAyahModal()" class="btn-close">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modal-ayah-text" class="modal-ayah-text"></p>
+                        <p id="modal-ayah-ref" class="modal-ayah-ref"></p>
+                        <div class="status-options">
+                            <button onclick="setAyahStatus('memorized')" class="status-btn memorized">
+                                <span>✅</span> محفوظة
+                            </button>
+                            <button onclick="setAyahStatus('needs-review')" class="status-btn needs-review">
+                                <span>🔄</span> تحتاج مراجعة
+                            </button>
+                            <button onclick="setAyahStatus('learning')" class="status-btn learning">
+                                <span>📖</span> قيد الحفظ
+                            </button>
+                            <button onclick="setAyahStatus('difficult')" class="status-btn difficult">
+                                <span>⚠️</span> صعبة
+                            </button>
+                            <button onclick="setAyahStatus('none')" class="status-btn none">
+                                <span>❌</span> إزالة الحالة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- قسم خطة الختم -->
         <section id="planner" class="section">
             <div class="section-header">

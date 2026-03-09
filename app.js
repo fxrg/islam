@@ -337,6 +337,20 @@ let currentAyahDay = 1;
 // ===== دوال التهيئة =====
 document.addEventListener('DOMContentLoaded', function() {
     try {
+        // تهيئة الوضع الداكن
+        initDarkMode();
+        
+        // تهيئة قسم القرآن
+        initQuranSection();
+        
+        // تهيئة عدادات المراجعة
+        updateReviewCounts();
+        
+        // إغلاق القائمة عند النقر على الروابط
+        document.querySelectorAll('.main-nav a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+        
         initDaySelector();
         showWird('morning');
         generatePlan();
@@ -810,4 +824,1493 @@ function displayHadithResultsAlt(ahadithData) {
                 <p>لم يتم العثور على نتائج</p>
             </div>`;
     }
+}
+
+// ============================================
+// ===== قسم تصفح القرآن الكريم =====
+// ============================================
+
+// بيانات السور
+const surahsData = [
+    { number: 1, name: "الفاتحة", nameEn: "Al-Fatiha", ayahs: 7, type: "meccan", juz: 1 },
+    { number: 2, name: "البقرة", nameEn: "Al-Baqarah", ayahs: 286, type: "medinan", juz: 1 },
+    { number: 3, name: "آل عمران", nameEn: "Aal-Imran", ayahs: 200, type: "medinan", juz: 3 },
+    { number: 4, name: "النساء", nameEn: "An-Nisa", ayahs: 176, type: "medinan", juz: 4 },
+    { number: 5, name: "المائدة", nameEn: "Al-Ma'idah", ayahs: 120, type: "medinan", juz: 6 },
+    { number: 6, name: "الأنعام", nameEn: "Al-An'am", ayahs: 165, type: "meccan", juz: 7 },
+    { number: 7, name: "الأعراف", nameEn: "Al-A'raf", ayahs: 206, type: "meccan", juz: 8 },
+    { number: 8, name: "الأنفال", nameEn: "Al-Anfal", ayahs: 75, type: "medinan", juz: 9 },
+    { number: 9, name: "التوبة", nameEn: "At-Tawbah", ayahs: 129, type: "medinan", juz: 10 },
+    { number: 10, name: "يونس", nameEn: "Yunus", ayahs: 109, type: "meccan", juz: 11 },
+    { number: 11, name: "هود", nameEn: "Hud", ayahs: 123, type: "meccan", juz: 11 },
+    { number: 12, name: "يوسف", nameEn: "Yusuf", ayahs: 111, type: "meccan", juz: 12 },
+    { number: 13, name: "الرعد", nameEn: "Ar-Ra'd", ayahs: 43, type: "medinan", juz: 13 },
+    { number: 14, name: "إبراهيم", nameEn: "Ibrahim", ayahs: 52, type: "meccan", juz: 13 },
+    { number: 15, name: "الحجر", nameEn: "Al-Hijr", ayahs: 99, type: "meccan", juz: 14 },
+    { number: 16, name: "النحل", nameEn: "An-Nahl", ayahs: 128, type: "meccan", juz: 14 },
+    { number: 17, name: "الإسراء", nameEn: "Al-Isra", ayahs: 111, type: "meccan", juz: 15 },
+    { number: 18, name: "الكهف", nameEn: "Al-Kahf", ayahs: 110, type: "meccan", juz: 15 },
+    { number: 19, name: "مريم", nameEn: "Maryam", ayahs: 98, type: "meccan", juz: 16 },
+    { number: 20, name: "طه", nameEn: "Ta-Ha", ayahs: 135, type: "meccan", juz: 16 },
+    { number: 21, name: "الأنبياء", nameEn: "Al-Anbiya", ayahs: 112, type: "meccan", juz: 17 },
+    { number: 22, name: "الحج", nameEn: "Al-Hajj", ayahs: 78, type: "medinan", juz: 17 },
+    { number: 23, name: "المؤمنون", nameEn: "Al-Mu'minun", ayahs: 118, type: "meccan", juz: 18 },
+    { number: 24, name: "النور", nameEn: "An-Nur", ayahs: 64, type: "medinan", juz: 18 },
+    { number: 25, name: "الفرقان", nameEn: "Al-Furqan", ayahs: 77, type: "meccan", juz: 18 },
+    { number: 26, name: "الشعراء", nameEn: "Ash-Shu'ara", ayahs: 227, type: "meccan", juz: 19 },
+    { number: 27, name: "النمل", nameEn: "An-Naml", ayahs: 93, type: "meccan", juz: 19 },
+    { number: 28, name: "القصص", nameEn: "Al-Qasas", ayahs: 88, type: "meccan", juz: 20 },
+    { number: 29, name: "العنكبوت", nameEn: "Al-Ankabut", ayahs: 69, type: "meccan", juz: 20 },
+    { number: 30, name: "الروم", nameEn: "Ar-Rum", ayahs: 60, type: "meccan", juz: 21 },
+    { number: 31, name: "لقمان", nameEn: "Luqman", ayahs: 34, type: "meccan", juz: 21 },
+    { number: 32, name: "السجدة", nameEn: "As-Sajdah", ayahs: 30, type: "meccan", juz: 21 },
+    { number: 33, name: "الأحزاب", nameEn: "Al-Ahzab", ayahs: 73, type: "medinan", juz: 21 },
+    { number: 34, name: "سبأ", nameEn: "Saba", ayahs: 54, type: "meccan", juz: 22 },
+    { number: 35, name: "فاطر", nameEn: "Fatir", ayahs: 45, type: "meccan", juz: 22 },
+    { number: 36, name: "يس", nameEn: "Ya-Sin", ayahs: 83, type: "meccan", juz: 22 },
+    { number: 37, name: "الصافات", nameEn: "As-Saffat", ayahs: 182, type: "meccan", juz: 23 },
+    { number: 38, name: "ص", nameEn: "Sad", ayahs: 88, type: "meccan", juz: 23 },
+    { number: 39, name: "الزمر", nameEn: "Az-Zumar", ayahs: 75, type: "meccan", juz: 23 },
+    { number: 40, name: "غافر", nameEn: "Ghafir", ayahs: 85, type: "meccan", juz: 24 },
+    { number: 41, name: "فصلت", nameEn: "Fussilat", ayahs: 54, type: "meccan", juz: 24 },
+    { number: 42, name: "الشورى", nameEn: "Ash-Shura", ayahs: 53, type: "meccan", juz: 25 },
+    { number: 43, name: "الزخرف", nameEn: "Az-Zukhruf", ayahs: 89, type: "meccan", juz: 25 },
+    { number: 44, name: "الدخان", nameEn: "Ad-Dukhan", ayahs: 59, type: "meccan", juz: 25 },
+    { number: 45, name: "الجاثية", nameEn: "Al-Jathiyah", ayahs: 37, type: "meccan", juz: 25 },
+    { number: 46, name: "الأحقاف", nameEn: "Al-Ahqaf", ayahs: 35, type: "meccan", juz: 26 },
+    { number: 47, name: "محمد", nameEn: "Muhammad", ayahs: 38, type: "medinan", juz: 26 },
+    { number: 48, name: "الفتح", nameEn: "Al-Fath", ayahs: 29, type: "medinan", juz: 26 },
+    { number: 49, name: "الحجرات", nameEn: "Al-Hujurat", ayahs: 18, type: "medinan", juz: 26 },
+    { number: 50, name: "ق", nameEn: "Qaf", ayahs: 45, type: "meccan", juz: 26 },
+    { number: 51, name: "الذاريات", nameEn: "Adh-Dhariyat", ayahs: 60, type: "meccan", juz: 26 },
+    { number: 52, name: "الطور", nameEn: "At-Tur", ayahs: 49, type: "meccan", juz: 27 },
+    { number: 53, name: "النجم", nameEn: "An-Najm", ayahs: 62, type: "meccan", juz: 27 },
+    { number: 54, name: "القمر", nameEn: "Al-Qamar", ayahs: 55, type: "meccan", juz: 27 },
+    { number: 55, name: "الرحمن", nameEn: "Ar-Rahman", ayahs: 78, type: "medinan", juz: 27 },
+    { number: 56, name: "الواقعة", nameEn: "Al-Waqi'ah", ayahs: 96, type: "meccan", juz: 27 },
+    { number: 57, name: "الحديد", nameEn: "Al-Hadid", ayahs: 29, type: "medinan", juz: 27 },
+    { number: 58, name: "المجادلة", nameEn: "Al-Mujadilah", ayahs: 22, type: "medinan", juz: 28 },
+    { number: 59, name: "الحشر", nameEn: "Al-Hashr", ayahs: 24, type: "medinan", juz: 28 },
+    { number: 60, name: "الممتحنة", nameEn: "Al-Mumtahanah", ayahs: 13, type: "medinan", juz: 28 },
+    { number: 61, name: "الصف", nameEn: "As-Saff", ayahs: 14, type: "medinan", juz: 28 },
+    { number: 62, name: "الجمعة", nameEn: "Al-Jumu'ah", ayahs: 11, type: "medinan", juz: 28 },
+    { number: 63, name: "المنافقون", nameEn: "Al-Munafiqun", ayahs: 11, type: "medinan", juz: 28 },
+    { number: 64, name: "التغابن", nameEn: "At-Taghabun", ayahs: 18, type: "medinan", juz: 28 },
+    { number: 65, name: "الطلاق", nameEn: "At-Talaq", ayahs: 12, type: "medinan", juz: 28 },
+    { number: 66, name: "التحريم", nameEn: "At-Tahrim", ayahs: 12, type: "medinan", juz: 28 },
+    { number: 67, name: "الملك", nameEn: "Al-Mulk", ayahs: 30, type: "meccan", juz: 29 },
+    { number: 68, name: "القلم", nameEn: "Al-Qalam", ayahs: 52, type: "meccan", juz: 29 },
+    { number: 69, name: "الحاقة", nameEn: "Al-Haqqah", ayahs: 52, type: "meccan", juz: 29 },
+    { number: 70, name: "المعارج", nameEn: "Al-Ma'arij", ayahs: 44, type: "meccan", juz: 29 },
+    { number: 71, name: "نوح", nameEn: "Nuh", ayahs: 28, type: "meccan", juz: 29 },
+    { number: 72, name: "الجن", nameEn: "Al-Jinn", ayahs: 28, type: "meccan", juz: 29 },
+    { number: 73, name: "المزمل", nameEn: "Al-Muzzammil", ayahs: 20, type: "meccan", juz: 29 },
+    { number: 74, name: "المدثر", nameEn: "Al-Muddaththir", ayahs: 56, type: "meccan", juz: 29 },
+    { number: 75, name: "القيامة", nameEn: "Al-Qiyamah", ayahs: 40, type: "meccan", juz: 29 },
+    { number: 76, name: "الإنسان", nameEn: "Al-Insan", ayahs: 31, type: "medinan", juz: 29 },
+    { number: 77, name: "المرسلات", nameEn: "Al-Mursalat", ayahs: 50, type: "meccan", juz: 29 },
+    { number: 78, name: "النبأ", nameEn: "An-Naba", ayahs: 40, type: "meccan", juz: 30 },
+    { number: 79, name: "النازعات", nameEn: "An-Nazi'at", ayahs: 46, type: "meccan", juz: 30 },
+    { number: 80, name: "عبس", nameEn: "Abasa", ayahs: 42, type: "meccan", juz: 30 },
+    { number: 81, name: "التكوير", nameEn: "At-Takwir", ayahs: 29, type: "meccan", juz: 30 },
+    { number: 82, name: "الانفطار", nameEn: "Al-Infitar", ayahs: 19, type: "meccan", juz: 30 },
+    { number: 83, name: "المطففين", nameEn: "Al-Mutaffifin", ayahs: 36, type: "meccan", juz: 30 },
+    { number: 84, name: "الانشقاق", nameEn: "Al-Inshiqaq", ayahs: 25, type: "meccan", juz: 30 },
+    { number: 85, name: "البروج", nameEn: "Al-Buruj", ayahs: 22, type: "meccan", juz: 30 },
+    { number: 86, name: "الطارق", nameEn: "At-Tariq", ayahs: 17, type: "meccan", juz: 30 },
+    { number: 87, name: "الأعلى", nameEn: "Al-A'la", ayahs: 19, type: "meccan", juz: 30 },
+    { number: 88, name: "الغاشية", nameEn: "Al-Ghashiyah", ayahs: 26, type: "meccan", juz: 30 },
+    { number: 89, name: "الفجر", nameEn: "Al-Fajr", ayahs: 30, type: "meccan", juz: 30 },
+    { number: 90, name: "البلد", nameEn: "Al-Balad", ayahs: 20, type: "meccan", juz: 30 },
+    { number: 91, name: "الشمس", nameEn: "Ash-Shams", ayahs: 15, type: "meccan", juz: 30 },
+    { number: 92, name: "الليل", nameEn: "Al-Layl", ayahs: 21, type: "meccan", juz: 30 },
+    { number: 93, name: "الضحى", nameEn: "Ad-Duha", ayahs: 11, type: "meccan", juz: 30 },
+    { number: 94, name: "الشرح", nameEn: "Ash-Sharh", ayahs: 8, type: "meccan", juz: 30 },
+    { number: 95, name: "التين", nameEn: "At-Tin", ayahs: 8, type: "meccan", juz: 30 },
+    { number: 96, name: "العلق", nameEn: "Al-Alaq", ayahs: 19, type: "meccan", juz: 30 },
+    { number: 97, name: "القدر", nameEn: "Al-Qadr", ayahs: 5, type: "meccan", juz: 30 },
+    { number: 98, name: "البينة", nameEn: "Al-Bayyinah", ayahs: 8, type: "medinan", juz: 30 },
+    { number: 99, name: "الزلزلة", nameEn: "Az-Zalzalah", ayahs: 8, type: "medinan", juz: 30 },
+    { number: 100, name: "العاديات", nameEn: "Al-Adiyat", ayahs: 11, type: "meccan", juz: 30 },
+    { number: 101, name: "القارعة", nameEn: "Al-Qari'ah", ayahs: 11, type: "meccan", juz: 30 },
+    { number: 102, name: "التكاثر", nameEn: "At-Takathur", ayahs: 8, type: "meccan", juz: 30 },
+    { number: 103, name: "العصر", nameEn: "Al-Asr", ayahs: 3, type: "meccan", juz: 30 },
+    { number: 104, name: "الهمزة", nameEn: "Al-Humazah", ayahs: 9, type: "meccan", juz: 30 },
+    { number: 105, name: "الفيل", nameEn: "Al-Fil", ayahs: 5, type: "meccan", juz: 30 },
+    { number: 106, name: "قريش", nameEn: "Quraysh", ayahs: 4, type: "meccan", juz: 30 },
+    { number: 107, name: "الماعون", nameEn: "Al-Ma'un", ayahs: 7, type: "meccan", juz: 30 },
+    { number: 108, name: "الكوثر", nameEn: "Al-Kawthar", ayahs: 3, type: "meccan", juz: 30 },
+    { number: 109, name: "الكافرون", nameEn: "Al-Kafirun", ayahs: 6, type: "meccan", juz: 30 },
+    { number: 110, name: "النصر", nameEn: "An-Nasr", ayahs: 3, type: "medinan", juz: 30 },
+    { number: 111, name: "المسد", nameEn: "Al-Masad", ayahs: 5, type: "meccan", juz: 30 },
+    { number: 112, name: "الإخلاص", nameEn: "Al-Ikhlas", ayahs: 4, type: "meccan", juz: 30 },
+    { number: 113, name: "الفلق", nameEn: "Al-Falaq", ayahs: 5, type: "meccan", juz: 30 },
+    { number: 114, name: "الناس", nameEn: "An-Nas", ayahs: 6, type: "meccan", juz: 30 }
+];
+
+// أسماء الأجزاء
+const juzNames = [
+    "الم", "سيقول", "تلك الرسل", "لن تنالوا", "والمحصنات",
+    "لا يحب الله", "وإذا سمعوا", "ولو أننا", "قال الملأ", "واعلموا",
+    "يعتذرون", "وما من دابة", "وما أبرئ", "ربما", "سبحان",
+    "قال ألم", "اقترب", "قد أفلح", "وقال الذين", "أمّن خلق",
+    "اتل ما أوحي", "ومن يقنت", "وما لي", "فمن أظلم", "إليه يرد",
+    "حم", "قال فما خطبكم", "قد سمع", "تبارك", "عمّ"
+];
+
+// متغيرات عامة للقرآن
+let currentSurah = 1;
+let currentJuz = 1;
+let currentPage = 1;
+let quranFontSize = 1.8;
+let hifzMode = false;
+let quranCache = {};
+
+// API URLs
+const QURAN_API_BASE = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1';
+const QURAN_EDITION = 'ara-quranuthmanihaf'; // النص العربي بالرسم العثماني
+
+// ===== دوال إدارة التخزين المحلي =====
+function getBookmarks() {
+    const bookmarks = localStorage.getItem('quranBookmarks');
+    return bookmarks ? JSON.parse(bookmarks) : [];
+}
+
+function saveBookmarks(bookmarks) {
+    localStorage.setItem('quranBookmarks', JSON.stringify(bookmarks));
+}
+
+function getHifzProgress() {
+    const progress = localStorage.getItem('quranHifzProgress');
+    return progress ? JSON.parse(progress) : { surahs: {}, ayahs: {} };
+}
+
+function saveHifzProgress(progress) {
+    localStorage.setItem('quranHifzProgress', JSON.stringify(progress));
+}
+
+// ===== دوال عرض القرآن =====
+function initQuranSection() {
+    displaySurahsList();
+    displayJuzList();
+    displayPagesList();
+    displayBookmarks();
+    updateHifzStats();
+}
+
+// عرض قائمة السور
+function displaySurahsList(filter = 'all', search = '') {
+    const container = document.getElementById('surahs-list');
+    if (!container) return;
+    
+    const hifzProgress = getHifzProgress();
+    let filteredSurahs = surahsData;
+    
+    // فلترة حسب النوع
+    if (filter !== 'all') {
+        filteredSurahs = filteredSurahs.filter(s => s.type === filter);
+    }
+    
+    // فلترة حسب البحث
+    if (search) {
+        filteredSurahs = filteredSurahs.filter(s => 
+            s.name.includes(search) || 
+            s.nameEn.toLowerCase().includes(search.toLowerCase()) ||
+            s.number.toString() === search
+        );
+    }
+    
+    let html = '';
+    filteredSurahs.forEach(surah => {
+        const isMemorized = hifzProgress.surahs[surah.number]?.complete;
+        const memorizedClass = isMemorized ? 'memorized' : '';
+        const typeClass = surah.type === 'medinan' ? 'medinan' : '';
+        const typeText = surah.type === 'meccan' ? 'مكية' : 'مدنية';
+        
+        html += `
+            <div class="surah-card ${memorizedClass}" onclick="openSurah(${surah.number})">
+                <span class="surah-number">${surah.number}</span>
+                ${isMemorized ? '<span class="hifz-indicator">✓</span>' : ''}
+                <div class="surah-name">${surah.name}</div>
+                <div class="surah-name-en">${surah.nameEn}</div>
+                <div class="surah-meta">
+                    <span class="surah-type ${typeClass}">${typeText}</span>
+                    <span>${surah.ayahs} آية</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html || '<p class="empty-message">لم يتم العثور على سور مطابقة</p>';
+}
+
+// فلترة السور
+function filterSurahs() {
+    const search = document.getElementById('surah-search')?.value || '';
+    const activeFilter = document.querySelector('.filter-btn.active');
+    const filter = activeFilter ? activeFilter.textContent.trim() : 'all';
+    
+    let filterType = 'all';
+    if (filter === 'مكية') filterType = 'meccan';
+    else if (filter === 'مدنية') filterType = 'medinan';
+    
+    displaySurahsList(filterType, search);
+}
+
+function filterByType(type) {
+    // تحديث الأزرار النشطة
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    const search = document.getElementById('surah-search')?.value || '';
+    displaySurahsList(type, search);
+}
+
+// عرض قائمة الأجزاء
+function displayJuzList() {
+    const container = document.getElementById('juz-list');
+    if (!container) return;
+    
+    let html = '';
+    for (let i = 1; i <= 30; i++) {
+        const startSurah = surahsData.find(s => s.juz === i);
+        const startSurahName = startSurah ? startSurah.name : '';
+        
+        html += `
+            <div class="juz-card" onclick="openJuz(${i})">
+                <div class="juz-number">${i}</div>
+                <div class="juz-name">${juzNames[i-1]}</div>
+                <div class="juz-range">من سورة ${startSurahName}</div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+// عرض قائمة الصفحات
+function displayPagesList() {
+    const container = document.getElementById('pages-list');
+    if (!container) return;
+    
+    let html = '';
+    for (let i = 1; i <= 604; i++) {
+        const currentClass = i === currentPage ? 'current' : '';
+        html += `
+            <div class="page-card ${currentClass}" onclick="openPage(${i})">
+                <div class="page-num">${i}</div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+// التنقل إلى صفحة محددة
+function goToPage(pageNum) {
+    if (pageNum >= 1 && pageNum <= 604) {
+        currentPage = pageNum;
+        openPage(pageNum);
+    }
+}
+
+function goToPageInput() {
+    const input = document.getElementById('page-input');
+    const pageNum = parseInt(input?.value);
+    if (pageNum && pageNum >= 1 && pageNum <= 604) {
+        goToPage(pageNum);
+    } else {
+        alert('رقم الصفحة يجب أن يكون بين 1 و 604');
+    }
+}
+
+// عرض المحفوظات
+function displayBookmarks() {
+    const container = document.getElementById('bookmarks-list');
+    if (!container) return;
+    
+    const bookmarks = getBookmarks();
+    
+    if (bookmarks.length === 0) {
+        container.innerHTML = '<p class="empty-message">لا توجد إشارات مرجعية محفوظة<br>اضغط على 🔖 أثناء القراءة لإضافة إشارة</p>';
+        return;
+    }
+    
+    let html = '';
+    bookmarks.forEach((bookmark, index) => {
+        const surah = surahsData.find(s => s.number === bookmark.surah);
+        html += `
+            <div class="bookmark-item">
+                <div class="bookmark-info">
+                    <div class="bookmark-title">سورة ${surah?.name || bookmark.surah}</div>
+                    <div class="bookmark-details">
+                        الآية ${bookmark.ayah || 1} - ${new Date(bookmark.date).toLocaleDateString('ar-SA')}
+                    </div>
+                </div>
+                <div class="bookmark-actions">
+                    <button onclick="openBookmark(${index})" title="فتح">📖</button>
+                    <button onclick="removeBookmark(${index})" title="حذف">🗑️</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// إضافة/إزالة إشارة مرجعية
+function toggleBookmark() {
+    const bookmarks = getBookmarks();
+    const existingIndex = bookmarks.findIndex(b => b.surah === currentSurah);
+    
+    if (existingIndex !== -1) {
+        bookmarks.splice(existingIndex, 1);
+        document.getElementById('bookmark-btn')?.classList.remove('active');
+    } else {
+        bookmarks.push({
+            surah: currentSurah,
+            ayah: 1,
+            date: new Date().toISOString()
+        });
+        document.getElementById('bookmark-btn')?.classList.add('active');
+    }
+    
+    saveBookmarks(bookmarks);
+    displayBookmarks();
+}
+
+// حفظ كل الصفحة/السورة الحالية كمحفوظة
+async function saveEntirePage() {
+    try {
+        // الحصول على معلومات السورة الحالية
+        const surahInfo = surahsData.find(s => s.number === currentSurah);
+        if (!surahInfo) {
+            alert('خطأ في تحديد السورة');
+            return;
+        }
+        
+        const ayahCount = surahInfo.ayahs;
+        let savedCount = 0;
+        
+        // جلب بيانات الحفظ الحالية
+        const progress = getHifzProgress();
+        
+        // تحديث حالة كل الآيات إلى "محفوظة"
+        for (let ayahNum = 1; ayahNum <= ayahCount; ayahNum++) {
+            const ayahKey = `${currentSurah}-${ayahNum}`;
+            
+            // فقط إذا لم تكن محفوظة بالفعل
+            if (!progress.ayahs[ayahKey]) {
+                progress.ayahs[ayahKey] = true;
+                savedCount++;
+            }
+        }
+        
+        // تحديث حالة السورة كمكتملة
+        progress.surahs[currentSurah] = {
+            complete: true,
+            count: ayahCount
+        };
+        
+        // حفظ التقدم
+        saveHifzProgress(progress);
+        
+        // تحديث أيضاً حالات الآيات للعرض
+        const statuses = JSON.parse(localStorage.getItem('ayahStatuses') || '{}');
+        for (let ayahNum = 1; ayahNum <= ayahCount; ayahNum++) {
+            const statusKey = `${currentSurah}:${ayahNum}`;
+            if (statuses[statusKey] !== 'memorized') {
+                statuses[statusKey] = 'memorized';
+            }
+        }
+        localStorage.setItem('ayahStatuses', JSON.stringify(statuses));
+        
+        // تحديث إحصائيات الحفظ
+        updateHifzStats();
+        
+        // تحديث قائمة السور لإظهار علامة الحفظ
+        displaySurahsList();
+        
+        // إظهار رسالة نجاح
+        const surahName = surahInfo.name;
+        const btn = document.getElementById('save-page-btn');
+        if (btn) {
+            btn.textContent = '✅';
+            btn.classList.add('saved');
+            setTimeout(() => {
+                btn.textContent = '💾';
+                btn.classList.remove('saved');
+            }, 2000);
+        }
+        
+        // إعادة تحميل السورة لتحديث العرض
+        openSurah(currentSurah);
+        
+        alert(`تم حفظ ${savedCount > 0 ? savedCount : ayahCount} آية من سورة ${surahName} كمحفوظة ✅`);
+        
+    } catch (error) {
+        console.error('خطأ في حفظ الصفحة:', error);
+        alert('حدث خطأ في حفظ الصفحة');
+    }
+}
+
+function removeBookmark(index) {
+    const bookmarks = getBookmarks();
+    bookmarks.splice(index, 1);
+    saveBookmarks(bookmarks);
+    displayBookmarks();
+}
+
+function clearAllBookmarks() {
+    if (confirm('هل تريد حذف جميع الإشارات المرجعية؟')) {
+        saveBookmarks([]);
+        displayBookmarks();
+    }
+}
+
+function openBookmark(index) {
+    const bookmarks = getBookmarks();
+    if (bookmarks[index]) {
+        openSurah(bookmarks[index].surah);
+    }
+}
+
+// ===== دوال جلب القرآن من API =====
+async function fetchQuranData(endpoint, fallback = true) {
+    const url = `${QURAN_API_BASE}${endpoint}`;
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('API Error');
+        return await response.json();
+    } catch (error) {
+        if (fallback) {
+            // محاولة الرابط البديل
+            const altUrl = url.replace('.json', '.min.json');
+            try {
+                const response = await fetch(altUrl);
+                if (!response.ok) throw new Error('Fallback API Error');
+                return await response.json();
+            } catch (e) {
+                console.error('فشل في جلب البيانات:', e);
+                return null;
+            }
+        }
+        return null;
+    }
+}
+
+// فتح سورة للقراءة
+async function openSurah(surahNumber) {
+    currentSurah = surahNumber;
+    const surah = surahsData.find(s => s.number === surahNumber);
+    
+    // إظهار القارئ
+    const reader = document.getElementById('quran-reader');
+    const loading = document.getElementById('quran-loading');
+    const content = document.getElementById('quran-content');
+    const mushafContainer = document.getElementById('mushaf-container');
+    
+    if (!reader || !loading || !content) return;
+    
+    reader.style.display = 'flex';
+    loading.style.display = 'block';
+    content.style.display = 'block';
+    content.innerHTML = '';
+    if (mushafContainer) mushafContainer.style.display = 'none';
+    
+    // تحديث عنوان السورة
+    document.getElementById('reader-surah-name').textContent = `سورة ${surah?.name}`;
+    document.getElementById('reader-surah-info').textContent = 
+        `${surah?.type === 'meccan' ? 'مكية' : 'مدنية'} - ${surah?.ayahs} آية`;
+    document.getElementById('current-position').textContent = `سورة ${surahNumber} من 114`;
+    
+    // تحديث حالة الإشارة المرجعية
+    const bookmarks = getBookmarks();
+    const isBookmarked = bookmarks.some(b => b.surah === surahNumber);
+    document.getElementById('bookmark-btn')?.classList.toggle('active', isBookmarked);
+    
+    // جلب بيانات السورة
+    try {
+        let data;
+        
+        // التحقق من الذاكرة المؤقتة
+        if (quranCache[surahNumber]) {
+            data = quranCache[surahNumber];
+        } else {
+            data = await fetchQuranData(`/editions/${QURAN_EDITION}/${surahNumber}.json`);
+            if (data) {
+                quranCache[surahNumber] = data;
+            }
+        }
+        
+        loading.style.display = 'none';
+        
+        if (data && data.chapter) {
+            displaySurahContent(data.chapter, surah);
+        } else {
+            content.innerHTML = '<p class="empty-message">تعذر تحميل السورة. يرجى المحاولة مرة أخرى.</p>';
+        }
+    } catch (error) {
+        loading.style.display = 'none';
+        content.innerHTML = '<p class="empty-message">حدث خطأ أ أثناء التحميل. تأكد من اتصالك بالإنترنت.</p>';
+    }
+}
+
+// عرض محتوى السورة
+function displaySurahContent(ayahs, surahInfo) {
+    const content = document.getElementById('quran-content');
+    const mushafContainer = document.getElementById('mushaf-container');
+    const hifzProgress = getHifzProgress();
+    const ayahStatuses = JSON.parse(localStorage.getItem('ayahStatuses') || '{}');
+    
+    // إظهار المحتوى العادي وإخفاء المصحف
+    if (content) content.style.display = 'block';
+    if (mushafContainer) mushafContainer.style.display = 'none';
+    
+    let html = '';
+    
+    // البسملة (ما عدا سورة التوبة)
+    if (currentSurah !== 9) {
+        html += '<div class="bismillah">﷽</div>';
+    }
+    
+    ayahs.forEach((ayah, index) => {
+        const ayahNum = index + 1;
+        const isMemorized = hifzProgress.ayahs[`${currentSurah}-${ayahNum}`];
+        const statusKey = `${currentSurah}:${ayahNum}`;
+        const ayahStatus = ayahStatuses[statusKey] || '';
+        const memorizedClass = isMemorized ? 'memorized' : '';
+        const statusClass = ayahStatus ? ayahStatus : '';
+        const safeText = ayah.text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        
+        html += `
+            <div class="ayah-container ${memorizedClass} ${statusClass}" id="ayah-${ayahNum}" data-surah="${currentSurah}" data-ayah="${ayahNum}" onclick="openAyahModal(${currentSurah}, ${ayahNum}, '${safeText}')">
+                <div class="ayah-text-display" style="font-size: ${quranFontSize}rem;">
+                    ${ayah.text}
+                    <span class="ayah-end-mark">۝${toArabicNumber(ayahNum)}</span>
+                </div>
+                <div class="ayah-translation" id="translation-${ayahNum}" style="display: none;"></div>
+                <div class="ayah-actions" style="display: none;">
+                    <button class="ayah-action-btn memorized-btn ${isMemorized ? 'active' : ''}" 
+                            onclick="event.stopPropagation(); toggleAyahHifz(${currentSurah}, ${ayahNum})">
+                        ${isMemorized ? '✓ محفوظة' : '📝 حفظت'}
+                    </button>
+                    <button class="ayah-action-btn" onclick="event.stopPropagation(); copyAyah('${safeText}', ${ayahNum})">
+                        📋 نسخ
+                    </button>
+                    <button class="ayah-action-btn" onclick="event.stopPropagation(); shareAyah('${surahInfo.name}', ${ayahNum})">
+                        📤 مشاركة
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    content.innerHTML = html;
+    
+    // تحميل الترجمة إذا كانت مفعلة
+    if (translationEnabled) {
+        loadTranslations();
+    }
+}
+
+// تحويل الأرقام للعربية
+function toArabicNumber(num) {
+    const arabicNums = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return String(num).split('').map(d => arabicNums[parseInt(d)]).join('');
+}
+
+// وظائف الآيات
+function copyAyah(text, ayahNum) {
+    const surah = surahsData.find(s => s.number === currentSurah);
+    const fullText = `${text}\n\n[ سورة ${surah?.name} - الآية ${ayahNum} ]`;
+    
+    navigator.clipboard.writeText(fullText).then(() => {
+        alert('تم نسخ الآية بنجاح');
+    }).catch(() => {
+        // بديل للمتصفحات القديمة
+        const textArea = document.createElement('textarea');
+        textArea.value = fullText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('تم نسخ الآية بنجاح');
+    });
+}
+
+function shareAyah(surahName, ayahNum) {
+    const text = `من سورة ${surahName} - الآية ${ayahNum} | رفيق رمضان`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'آية من القرآن الكريم',
+            text: text,
+            url: window.location.href
+        });
+    } else {
+        copyAyah(text, ayahNum);
+    }
+}
+
+// تبديل حالة حفظ الآية
+function toggleAyahHifz(surahNum, ayahNum) {
+    const progress = getHifzProgress();
+    const key = `${surahNum}-${ayahNum}`;
+    
+    if (progress.ayahs[key]) {
+        delete progress.ayahs[key];
+    } else {
+        progress.ayahs[key] = true;
+    }
+    
+    // التحقق من إكمال حفظ السورة
+    const surah = surahsData.find(s => s.number === surahNum);
+    if (surah) {
+        let memorizedCount = 0;
+        for (let i = 1; i <= surah.ayahs; i++) {
+            if (progress.ayahs[`${surahNum}-${i}`]) memorizedCount++;
+        }
+        progress.surahs[surahNum] = {
+            complete: memorizedCount === surah.ayahs,
+            count: memorizedCount
+        };
+    }
+    
+    saveHifzProgress(progress);
+    updateHifzStats();
+    
+    // تحديث قائمة السور
+    displaySurahsList();
+    
+    // تحديث واجهة الآية
+    const ayahContainer = document.getElementById(`ayah-${ayahNum}`);
+    const btn = ayahContainer?.querySelector('.memorized-btn');
+    
+    if (progress.ayahs[key]) {
+        ayahContainer?.classList.add('memorized');
+        if (btn) {
+            btn.classList.add('active');
+            btn.textContent = '✓ محفوظة';
+        }
+    } else {
+        ayahContainer?.classList.remove('memorized');
+        if (btn) {
+            btn.classList.remove('active');
+            btn.textContent = '📝 حفظت';
+        }
+    }
+}
+
+// تحديث إحصائيات الحفظ
+function updateHifzStats() {
+    const progress = getHifzProgress();
+    
+    // حساب السور المحفوظة
+    let memorizedSurahs = 0;
+    Object.values(progress.surahs).forEach(s => {
+        if (s.complete) memorizedSurahs++;
+    });
+    
+    // حساب الآيات المحفوظة
+    const memorizedAyahs = Object.keys(progress.ayahs).length;
+    const totalAyahs = 6236;
+    
+    // حساب النسبة
+    const percentage = ((memorizedAyahs / totalAyahs) * 100).toFixed(1);
+    
+    // تحديث العرض
+    const surahCount = document.getElementById('hifz-surah-count');
+    const ayahCount = document.getElementById('hifz-ayah-count');
+    const percentageEl = document.getElementById('hifz-percentage');
+    const progressFill = document.getElementById('hifz-progress-fill');
+    
+    if (surahCount) surahCount.textContent = `${memorizedSurahs}/114`;
+    if (ayahCount) ayahCount.textContent = `${memorizedAyahs}/${totalAyahs}`;
+    if (percentageEl) percentageEl.textContent = `${percentage}%`;
+    if (progressFill) progressFill.style.width = `${percentage}%`;
+}
+
+// التنقل بين السور
+function previousSurah() {
+    if (currentSurah > 1) {
+        openSurah(currentSurah - 1);
+    }
+}
+
+function nextSurah() {
+    if (currentSurah < 114) {
+        openSurah(currentSurah + 1);
+    }
+}
+
+// إغلاق القارئ
+function closeReader() {
+    const reader = document.getElementById('quran-reader');
+    if (reader) reader.style.display = 'none';
+}
+
+// فتح جزء
+async function openJuz(juzNumber) {
+    currentJuz = juzNumber;
+    
+    const reader = document.getElementById('quran-reader');
+    const loading = document.getElementById('quran-loading');
+    const content = document.getElementById('quran-content');
+    
+    if (!reader || !loading || !content) return;
+    
+    reader.style.display = 'flex';
+    loading.style.display = 'block';
+    content.innerHTML = '';
+    
+    // تحديث العنوان
+    document.getElementById('reader-surah-name').textContent = `الجزء ${juzNumber}`;
+    document.getElementById('reader-surah-info').textContent = juzNames[juzNumber - 1];
+    document.getElementById('current-position').textContent = `جزء ${juzNumber} من 30`;
+    
+    try {
+        const data = await fetchQuranData(`/editions/${QURAN_EDITION}/juzs/${juzNumber}.json`);
+        loading.style.display = 'none';
+        
+        if (data && data.juz) {
+            displayJuzContent(data.juz);
+        } else {
+            content.innerHTML = '<p class="empty-message">تعذر تحميل الجزء. يرجى المحاولة مرة أخرى.</p>';
+        }
+    } catch (error) {
+        loading.style.display = 'none';
+        content.innerHTML = '<p class="empty-message">حدث خطأ أثناء التحميل.</p>';
+    }
+}
+
+function displayJuzContent(ayahs) {
+    const content = document.getElementById('quran-content');
+    let html = '';
+    let currentDisplaySurah = 0;
+    
+    ayahs.forEach((ayah, index) => {
+        // عرض اسم السورة عند تغييرها
+        if (ayah.chapter !== currentDisplaySurah) {
+            currentDisplaySurah = ayah.chapter;
+            const surah = surahsData.find(s => s.number === currentDisplaySurah);
+            html += `<div class="juz-surah-header" onclick="openSurah(${currentDisplaySurah})">
+                <h3>سورة ${surah?.name}</h3>
+            </div>`;
+            if (currentDisplaySurah !== 9 && ayah.verse === 1) {
+                html += '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+            }
+        }
+        
+        html += `
+            <div class="ayah-container" id="juz-ayah-${index}">
+                <div class="ayah-text-display" style="font-size: ${quranFontSize}rem;">
+                    <span class="ayah-number">${ayah.verse}</span>
+                    ${ayah.text}
+                </div>
+            </div>
+        `;
+    });
+    
+    content.innerHTML = html;
+}
+
+// فتح صفحة
+async function openPage(pageNumber) {
+    currentPage = pageNumber;
+    
+    const reader = document.getElementById('quran-reader');
+    const loading = document.getElementById('quran-loading');
+    const content = document.getElementById('quran-content');
+    
+    if (!reader || !loading || !content) return;
+    
+    reader.style.display = 'flex';
+    loading.style.display = 'block';
+    content.innerHTML = '';
+    
+    document.getElementById('reader-surah-name').textContent = `الصفحة ${pageNumber}`;
+    document.getElementById('reader-surah-info').textContent = `من 604 صفحة`;
+    document.getElementById('current-position').textContent = `صفحة ${pageNumber} من 604`;
+    
+    try {
+        const data = await fetchQuranData(`/editions/${QURAN_EDITION}/pages/${pageNumber}.json`);
+        loading.style.display = 'none';
+        
+        if (data && data.page) {
+            displayPageContent(data.page);
+        } else {
+            content.innerHTML = '<p class="empty-message">تعذر تحميل الصفحة.</p>';
+        }
+    } catch (error) {
+        loading.style.display = 'none';
+        content.innerHTML = '<p class="empty-message">حدث خطأ أثناء التحميل.</p>';
+    }
+}
+
+function displayPageContent(ayahs) {
+    const content = document.getElementById('quran-content');
+    let html = '';
+    let currentDisplaySurah = 0;
+    
+    ayahs.forEach((ayah, index) => {
+        if (ayah.chapter !== currentDisplaySurah) {
+            currentDisplaySurah = ayah.chapter;
+            const surah = surahsData.find(s => s.number === currentDisplaySurah);
+            html += `<div class="juz-surah-header" onclick="openSurah(${currentDisplaySurah})">
+                <h3>سورة ${surah?.name}</h3>
+            </div>`;
+            if (currentDisplaySurah !== 9 && ayah.verse === 1) {
+                html += '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+            }
+        }
+        
+        html += `
+            <div class="ayah-container">
+                <div class="ayah-text-display" style="font-size: ${quranFontSize}rem;">
+                    <span class="ayah-number">${ayah.verse}</span>
+                    ${ayah.text}
+                </div>
+            </div>
+        `;
+    });
+    
+    content.innerHTML = html;
+}
+
+// البحث في القرآن
+async function searchQuran() {
+    const searchInput = document.getElementById('quran-search-input');
+    const resultsContainer = document.getElementById('search-results');
+    const query = searchInput?.value.trim();
+    
+    if (!query || query.length < 2) {
+        alert('أدخل كلمة للبحث (حرفين على الأقل)');
+        return;
+    }
+    
+    resultsContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>جاري البحث...</p></div>';
+    
+    try {
+        // جلب القرآن كاملاً للبحث
+        let fullQuran;
+        if (quranCache['full']) {
+            fullQuran = quranCache['full'];
+        } else {
+            fullQuran = await fetchQuranData(`/editions/${QURAN_EDITION}.json`);
+            if (fullQuran) {
+                quranCache['full'] = fullQuran;
+            }
+        }
+        
+        if (!fullQuran || !fullQuran.quran) {
+            resultsContainer.innerHTML = '<p class="empty-search">تعذر البحث. حاول مرة أخرى.</p>';
+            return;
+        }
+        
+        // البحث في الآيات
+        const results = [];
+        fullQuran.quran.forEach(ayah => {
+            if (ayah.text.includes(query)) {
+                results.push(ayah);
+            }
+        });
+        
+        if (results.length === 0) {
+            resultsContainer.innerHTML = `<p class="empty-search">لم يتم العثور على نتائج لـ "${query}"</p>`;
+            return;
+        }
+        
+        // عرض النتائج (أول 50 نتيجة)
+        let html = `<p style="margin-bottom:1rem;color:var(--text-secondary);">تم العثور على ${results.length} نتيجة</p>`;
+        
+        results.slice(0, 50).forEach(ayah => {
+            const surah = surahsData.find(s => s.number === ayah.chapter);
+            const highlightedText = ayah.text.replace(
+                new RegExp(query, 'g'),
+                `<span class="search-highlight">${query}</span>`
+            );
+            
+            html += `
+                <div class="search-result-item" onclick="openSurahFromSearch(${ayah.chapter}, ${ayah.verse})">
+                    <div class="search-result-ayah">${highlightedText}</div>
+                    <div class="search-result-ref">📖 سورة ${surah?.name} - الآية ${ayah.verse}</div>
+                </div>
+            `;
+        });
+        
+        if (results.length > 50) {
+            html += `<p style="text-align:center;color:var(--text-secondary);margin-top:1rem;">يظهر 50 نتيجة من أصل ${results.length}</p>`;
+        }
+        
+        resultsContainer.innerHTML = html;
+        
+    } catch (error) {
+        resultsContainer.innerHTML = '<p class="empty-search">حدث خطأ أثناء البحث.</p>';
+    }
+}
+
+function openSurahFromSearch(surahNum, ayahNum) {
+    openSurah(surahNum).then(() => {
+        // الانتقال للآية المحددة بعد التحميل
+        setTimeout(() => {
+            const ayahEl = document.getElementById(`ayah-${ayahNum}`);
+            if (ayahEl) {
+                ayahEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                ayahEl.style.background = 'var(--gold-light)';
+                setTimeout(() => {
+                    ayahEl.style.background = '';
+                }, 2000);
+            }
+        }, 500);
+    });
+}
+
+// تبديل التبويبات
+function showQuranTab(tabName, clickedElement) {
+    // إخفاء جميع المحتويات
+    document.querySelectorAll('.quran-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // إزالة الفعّال من جميع التبويبات
+    document.querySelectorAll('.quran-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // إظهار المحتوى المحدد
+    const tabContent = document.getElementById(`${tabName}-tab`);
+    if (tabContent) tabContent.classList.add('active');
+    
+    // تفعيل التبويب المضغوط
+    if (clickedElement) clickedElement.classList.add('active');
+}
+
+// تغيير حجم الخط
+function changeFontSize(delta) {
+    quranFontSize = Math.max(1.2, Math.min(3, quranFontSize + (delta * 0.2)));
+    document.querySelectorAll('.ayah-text-display').forEach(el => {
+        el.style.fontSize = `${quranFontSize}rem`;
+    });
+}
+
+// وضع الحفظ
+function toggleHifzMode() {
+    hifzMode = !hifzMode;
+    document.getElementById('hifz-btn')?.classList.toggle('active', hifzMode);
+    
+    // إظهار/إخفاء أزرار الحفظ
+    document.querySelectorAll('.ayah-actions').forEach(el => {
+        el.style.display = hifzMode ? 'flex' : 'none';
+    });
+}
+
+// الذهاب للأعلى
+function scrollToTop() {
+    const content = document.getElementById('quran-content');
+    if (content) {
+        content.scrollTop = 0;
+    }
+    document.getElementById('quran-reader')?.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== الوضع الداكن =====
+function initDarkMode() {
+    // استخدام تفضيل النظام كافتراضي
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme === 'dark');
+    } else if (systemPrefersDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        updateThemeIcon(true);
+    }
+    
+    // الاستماع لتغييرات تفضيل النظام
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            updateThemeIcon(e.matches);
+        }
+    });
+}
+
+function toggleDarkMode() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme === 'dark');
+}
+
+function updateThemeIcon(isDark) {
+    const icon = document.querySelector('.theme-icon');
+    if (icon) {
+        icon.textContent = isDark ? '☀️' : '🌙';
+    }
+}
+
+// ===== قائمة الجوال =====
+function toggleMobileMenu() {
+    const nav = document.querySelector('.main-nav');
+    const burger = document.querySelector('.burger-menu');
+    const overlay = document.querySelector('.nav-overlay');
+    
+    nav?.classList.toggle('active');
+    burger?.classList.toggle('active');
+    overlay?.classList.toggle('active');
+    
+    // منع التمرير عند فتح القائمة
+    document.body.style.overflow = nav?.classList.contains('active') ? 'hidden' : '';
+}
+
+function closeMobileMenu() {
+    const nav = document.querySelector('.main-nav');
+    const burger = document.querySelector('.burger-menu');
+    const overlay = document.querySelector('.nav-overlay');
+    
+    nav?.classList.remove('active');
+    burger?.classList.remove('active');
+    overlay?.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ===== عرض المصحف مع تقليب الصفحات =====
+let currentMushafPage = 1;
+let totalMushafPages = 604;
+let mushafViewActive = false;
+let mushafPagesCache = {};
+
+async function togglePageView() {
+    mushafViewActive = !mushafViewActive;
+    const mushafContainer = document.getElementById('mushaf-container');
+    const normalContent = document.getElementById('quran-content');
+    const toggleBtn = document.querySelector('.view-toggle-btn');
+    
+    if (mushafViewActive) {
+        mushafContainer?.classList.add('active');
+        if (normalContent) normalContent.style.display = 'none';
+        if (toggleBtn) toggleBtn.textContent = '📖 العرض العادي';
+        
+        // تحميل الصفحة الحالية
+        if (currentSurah) {
+            currentMushafPage = surahsData.find(s => s.number === currentSurah)?.startPage || 1;
+        }
+        await loadMushafPage(currentMushafPage);
+    } else {
+        mushafContainer?.classList.remove('active');
+        if (normalContent) normalContent.style.display = 'block';
+        if (toggleBtn) toggleBtn.textContent = '📜 عرض المصحف';
+    }
+}
+
+async function loadMushafPage(pageNum) {
+    const pageContent = document.getElementById('mushaf-page-content');
+    const pageInfo = document.querySelector('.mushaf-page-info');
+    const pageNumDisplay = document.querySelector('.mushaf-page-number');
+    
+    if (!pageContent) return;
+    
+    // تحديث عرض رقم الصفحة
+    if (pageInfo) pageInfo.textContent = `صفحة ${pageNum} من ${totalMushafPages}`;
+    if (pageNumDisplay) pageNumDisplay.textContent = pageNum;
+    
+    // التحقق من الكاش
+    if (mushafPagesCache[pageNum]) {
+        renderMushafPage(mushafPagesCache[pageNum]);
+        updateMushafNavButtons();
+        return;
+    }
+    
+    pageContent.innerHTML = '<div style="text-align:center;padding:3rem;">جاري تحميل الصفحة...</div>';
+    
+    try {
+        const url = `https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf.json`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // تصفية الآيات للصفحة المحددة
+        const pageAyahs = data.quran.filter(ayah => ayah.page === pageNum);
+        mushafPagesCache[pageNum] = pageAyahs;
+        
+        renderMushafPage(pageAyahs);
+    } catch (error) {
+        console.error('Error loading mushaf page:', error);
+        pageContent.innerHTML = '<div style="text-align:center;padding:3rem;color:#f44336;">حدث خطأ في تحميل الصفحة</div>';
+    }
+    
+    updateMushafNavButtons();
+}
+
+function renderMushafPage(ayahs) {
+    const pageContent = document.getElementById('mushaf-page-content');
+    if (!pageContent || !ayahs.length) return;
+    
+    // تجميع الآيات حسب السورة
+    let html = '';
+    let currentSurahNum = 0;
+    const ayahStatuses = JSON.parse(localStorage.getItem('ayahStatuses') || '{}');
+    
+    ayahs.forEach(ayah => {
+        // إضافة اسم السورة إذا تغيرت
+        if (ayah.surah !== currentSurahNum) {
+            currentSurahNum = ayah.surah;
+            const surahInfo = surahsData[currentSurahNum - 1];
+            if (surahInfo) {
+                html += `<div class="mushaf-surah-header" style="text-align:center;font-weight:bold;margin:1rem 0;font-size:1.3rem;color:var(--gold);">
+                    ❁ ${surahInfo.name} ❁
+                </div>`;
+                // إضافة البسملة (ما عدا الفاتحة والتوبة)
+                if (currentSurahNum !== 1 && currentSurahNum !== 9 && ayah.ayah === 1) {
+                    html += '<div style="text-align:center;margin:1rem 0;font-size:1.4rem;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>';
+                }
+            }
+        }
+        
+        const status = ayahStatuses[`${ayah.surah}:${ayah.ayah}`] || '';
+        const statusClass = status ? ` ${status}` : '';
+        
+        html += `<span class="ayah-inline${statusClass}" 
+            onclick="openAyahModal(${ayah.surah}, ${ayah.ayah}, '${escapeHtml(ayah.text)}')"
+            data-surah="${ayah.surah}" 
+            data-ayah="${ayah.ayah}">
+            ${ayah.text} <span style="color:var(--gold);font-size:0.8em;">(${toArabicNumber(ayah.ayah)})</span>
+        </span> `;
+    });
+    
+    pageContent.innerHTML = html;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML.replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
+function flipPagePrev() {
+    if (currentMushafPage > 1) {
+        currentMushafPage++;
+        animatePageFlip('prev');
+    }
+}
+
+function flipPageNext() {
+    if (currentMushafPage < totalMushafPages) {
+        currentMushafPage--;
+        animatePageFlip('next');
+    }
+}
+
+function animatePageFlip(direction) {
+    const page = document.querySelector('.mushaf-page');
+    if (page) {
+        page.classList.add('flipping');
+        setTimeout(() => {
+            loadMushafPage(currentMushafPage);
+            page.classList.remove('flipping');
+        }, 400);
+    } else {
+        loadMushafPage(currentMushafPage);
+    }
+}
+
+function updateMushafNavButtons() {
+    const prevBtn = document.querySelector('.mushaf-nav-btn[onclick*="flipPagePrev"]');
+    const nextBtn = document.querySelector('.mushaf-nav-btn[onclick*="flipPageNext"]');
+    
+    if (prevBtn) prevBtn.disabled = currentMushafPage >= totalMushafPages;
+    if (nextBtn) nextBtn.disabled = currentMushafPage <= 1;
+}
+
+// ===== الترجمة =====
+let translationEnabled = false;
+let currentTranslation = 'eng-abdulhye';
+let translationsCache = {};
+
+function toggleTranslation() {
+    translationEnabled = !translationEnabled;
+    
+    const translationSettings = document.getElementById('translation-settings');
+    const translationBtn = document.getElementById('translation-btn');
+    
+    if (translationSettings) {
+        translationSettings.style.display = translationEnabled ? 'flex' : 'none';
+    }
+    if (translationBtn) {
+        translationBtn.classList.toggle('active', translationEnabled);
+    }
+    
+    if (translationEnabled && currentSurah) {
+        loadTranslations();
+    } else {
+        hideAllTranslations();
+    }
+}
+
+function changeTranslation() {
+    currentTranslation = document.getElementById('translation-lang')?.value || 'eng-abdulhye';
+    if (translationEnabled && currentSurah) {
+        loadTranslations();
+    }
+}
+
+async function loadTranslations() {
+    const cacheKey = `${currentSurah}-${currentTranslation}`;
+    
+    if (translationsCache[cacheKey]) {
+        displayTranslations(translationsCache[cacheKey]);
+        return;
+    }
+    
+    try {
+        const url = `https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/${currentTranslation}/${currentSurah}.json`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        translationsCache[cacheKey] = data.chapter;
+        displayTranslations(data.chapter);
+    } catch (error) {
+        console.error('Error loading translation:', error);
+    }
+}
+
+function displayTranslations(translations) {
+    document.querySelectorAll('.ayah-container').forEach((container, index) => {
+        let translationEl = container.querySelector('.ayah-translation');
+        
+        if (translations[index]) {
+            if (!translationEl) {
+                translationEl = document.createElement('div');
+                translationEl.className = 'ayah-translation';
+                container.appendChild(translationEl);
+            }
+            translationEl.textContent = translations[index].text;
+            translationEl.style.display = 'block';
+        }
+    });
+}
+
+function hideAllTranslations() {
+    document.querySelectorAll('.ayah-translation').forEach(el => {
+        el.style.display = 'none';
+    });
+}
+
+
+
+// ===== مودال حالة الآية =====
+let selectedAyahData = null;
+
+function openAyahModal(surah, ayah, text) {
+    selectedAyahData = { surah, ayah, text };
+    
+    const modal = document.getElementById('ayah-status-modal');
+    const preview = document.getElementById('modal-ayah-text');
+    const ref = document.getElementById('modal-ayah-ref');
+    const surahName = surahsData[surah - 1]?.name || `سورة ${surah}`;
+    
+    if (preview) {
+        preview.textContent = text;
+    }
+    if (ref) {
+        ref.textContent = `سورة ${surahName} - الآية ${ayah}`;
+    }
+    
+    // تحديث الحالة المحددة
+    const ayahStatuses = JSON.parse(localStorage.getItem('ayahStatuses') || '{}');
+    const currentStatus = ayahStatuses[`${surah}:${ayah}`] || 'none';
+    
+    document.querySelectorAll('.status-btn').forEach(btn => {
+        const btnStatus = btn.onclick?.toString().match(/'([^']+)'/)?.[1] || '';
+        btn.classList.toggle('active', btnStatus === currentStatus);
+    });
+    
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeAyahModal() {
+    const modal = document.getElementById('ayah-status-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    selectedAyahData = null;
+}
+
+function setAyahStatus(status) {
+    if (!selectedAyahData) return;
+    
+    const { surah, ayah } = selectedAyahData;
+    const key = `${surah}:${ayah}`;
+    const hifzKey = `${surah}-${ayah}`;
+    
+    const ayahStatuses = JSON.parse(localStorage.getItem('ayahStatuses') || '{}');
+    
+    if (status === 'none') {
+        delete ayahStatuses[key];
+    } else {
+        ayahStatuses[key] = status;
+    }
+    
+    localStorage.setItem('ayahStatuses', JSON.stringify(ayahStatuses));
+    
+    // تحديث نظام تتبع الحفظ أيضاً
+    const progress = getHifzProgress();
+    if (status === 'memorized') {
+        progress.ayahs[hifzKey] = true;
+    } else if (status === 'none' || status !== 'memorized') {
+        delete progress.ayahs[hifzKey];
+    }
+    
+    // التحقق من إكمال حفظ السورة
+    const surahInfo = surahsData.find(s => s.number === surah);
+    if (surahInfo) {
+        let memorizedCount = 0;
+        for (let i = 1; i <= surahInfo.ayahs; i++) {
+            if (progress.ayahs[`${surah}-${i}`]) memorizedCount++;
+        }
+        progress.surahs[surah] = {
+            complete: memorizedCount === surahInfo.ayahs,
+            count: memorizedCount
+        };
+    }
+    
+    saveHifzProgress(progress);
+    updateHifzStats();
+    
+    // تحديث قائمة السور إذا تغيرت حالة الحفظ
+    displaySurahsList();
+    
+    // تحديث العرض
+    updateAyahStatusDisplay(surah, ayah, status);
+    
+    // تحديث الخيارات المحددة
+    document.querySelectorAll('.status-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.status === status);
+    });
+    
+    // تحديث عداد المراجعة
+    updateReviewCounts();
+    
+    closeAyahModal();
+}
+
+function updateAyahStatusDisplay(surah, ayah, status) {
+    // تحديث في العرض العادي
+    const ayahContainer = document.querySelector(`.ayah-container[data-ayah="${ayah}"][data-surah="${surah}"]`);
+    if (ayahContainer) {
+        ayahContainer.classList.remove('needs-review', 'learning', 'difficult', 'memorized');
+        if (status && status !== 'none') {
+            ayahContainer.classList.add(status);
+        }
+    }
+    
+    // تحديث في عرض المصحف
+    const ayahInline = document.querySelector(`.ayah-inline[data-surah="${surah}"][data-ayah="${ayah}"]`);
+    if (ayahInline) {
+        ayahInline.classList.remove('needs-review', 'learning', 'difficult', 'memorized');
+        if (status && status !== 'none') {
+            ayahInline.classList.add(status);
+        }
+    }
+}
+
+// ===== تبويب المراجعة =====
+let currentReviewFilter = 'all';
+
+function filterReviewByStatus(status, btn) {
+    currentReviewFilter = status;
+    
+    // تحديث الأزرار
+    document.querySelectorAll('.review-filter-btn').forEach(b => b.classList.remove('active'));
+    btn?.classList.add('active');
+    
+    displayReviewList();
+}
+
+function displayReviewList() {
+    const reviewList = document.getElementById('review-list');
+    if (!reviewList) return;
+    
+    const ayahStatuses = JSON.parse(localStorage.getItem('ayahStatuses') || '{}');
+    const entries = Object.entries(ayahStatuses);
+    
+    // تصفية حسب الحالة
+    const filtered = currentReviewFilter === 'all' 
+        ? entries 
+        : entries.filter(([key, status]) => status === currentReviewFilter);
+    
+    if (filtered.length === 0) {
+        reviewList.innerHTML = `
+            <div class="review-empty">
+                <div class="review-empty-icon">📝</div>
+                <p>لا توجد آيات ${currentReviewFilter === 'all' ? 'محفوظة' : 'بهذه الحالة'}</p>
+            </div>
+        `;
+        return;
+    }
+    
+    reviewList.innerHTML = filtered.map(([key, status]) => {
+        const [surah, ayah] = key.split(':').map(Number);
+        const surahInfo = surahsData[surah - 1];
+        const statusIcons = {
+            'needs-review': '🔄',
+            'learning': '📚',
+            'difficult': '⚠️'
+        };
+        
+        return `
+            <div class="review-item ${status}" onclick="goToAyah(${surah}, ${ayah})">
+                <div class="review-item-status">${statusIcons[status] || '📖'}</div>
+                <div class="review-item-content">
+                    <div class="review-item-reference">${surahInfo?.name || 'سورة ' + surah} - آية ${ayah}</div>
+                    <div class="review-item-text">انقر للانتقال إلى الآية</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateReviewCounts() {
+    const ayahStatuses = JSON.parse(localStorage.getItem('ayahStatuses') || '{}');
+    const entries = Object.entries(ayahStatuses);
+    
+    const counts = {
+        all: entries.length,
+        'needs-review': entries.filter(([k, v]) => v === 'needs-review').length,
+        'learning': entries.filter(([k, v]) => v === 'learning').length,
+        'difficult': entries.filter(([k, v]) => v === 'difficult').length
+    };
+    
+    // تحديث الأزرار
+    document.querySelectorAll('.review-filter-btn').forEach(btn => {
+        const status = btn.dataset.status || 'all';
+        const countEl = btn.querySelector('.count');
+        if (countEl) {
+            countEl.textContent = counts[status] || 0;
+        }
+    });
+}
+
+async function goToAyah(surah, ayah) {
+    // إغلاق القارئ إذا مفتوح
+    closeQuranReader();
+    
+    // فتح السورة
+    await openSurah(surah);
+    
+    // الانتقال للآية بعد التحميل
+    setTimeout(() => {
+        const ayahContainer = document.querySelector(`.ayah-container[data-ayah="${ayah}"]`);
+        if (ayahContainer) {
+            ayahContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            ayahContainer.classList.add('highlighted');
+            setTimeout(() => ayahContainer.classList.remove('highlighted'), 3000);
+        }
+    }, 500);
 }
