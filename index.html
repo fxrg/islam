@@ -157,7 +157,7 @@
     <header class="main-header">
         <div class="header-content">
             <!-- زر القائمة للجوال -->
-            <button class="burger-menu" onclick="toggleMobileMenu()" aria-label="القائمة">
+            <button id="mobile-menu-button" class="burger-menu" onclick="toggleMobileMenu()" aria-label="فتح القائمة" aria-controls="main-nav" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -178,11 +178,19 @@
             <p>موقعك الإسلامي الشامل لشهر رمضان المبارك</p>
         </div>
         <nav class="main-nav" id="main-nav" aria-label="التنقل الرئيسي">
+            <div class="nav-mobile-header">
+                <div>
+                    <strong>رفيق رمضان</strong>
+                    <p>تنقل سريع بين الأقسام</p>
+                </div>
+                <button class="nav-close-btn" onclick="closeMobileMenu()" aria-label="إغلاق القائمة">✕</button>
+            </div>
             <a href="#quran-browser" class="nav-link active" aria-current="page" onclick="closeMobileMenu()">📕 القرآن</a>
             <a href="#planner" class="nav-link" onclick="closeMobileMenu()">📖 الختم</a>
             <a href="#daily-ayah" class="nav-link" onclick="closeMobileMenu()">📜 آية اليوم</a>
             <a href="#daily-wird" class="nav-link" onclick="closeMobileMenu()">📿 الأذكار</a>
             <a href="#sunnan" class="nav-link" onclick="closeMobileMenu()">☀️ السنن</a>
+            <a href="#prayer-times" class="nav-link" onclick="closeMobileMenu()">🕌 الصلاة</a>
             <a href="#feelings" class="nav-link" onclick="closeMobileMenu()">💚 مشاعرك</a>
             <a href="#hadith" class="nav-link" onclick="closeMobileMenu()">📚 الأحاديث</a>
         </nav>
@@ -437,13 +445,21 @@
             </div>
 
             <div id="plan-result" class="plan-container">
-                <!-- سيتم عرض الخطة هنا -->
+                <div class="planner-placeholder">
+                    <div class="planner-placeholder-icon">📘</div>
+                    <h3>أنشئ خطتك أولاً</h3>
+                    <p>نحدد لك ورد اليوم تلقائياً حسب يوم رمضان الحالي، ثم يمكنك تعليم اليوم كمكتمل أو تأجيله.</p>
+                </div>
             </div>
 
             <div id="today-reading" class="today-reading-box">
                 <h3>📌 وردك اليوم</h3>
                 <div id="today-content">
-                    <p>اختر اليوم وعدد الختمات لمعرفة وردك</p>
+                    <p>الخطة لم تُنشأ بعد. اختر عدد الختمات ثم اضغط إنشاء الخطة.</p>
+                </div>
+                <div id="today-plan-actions" class="today-plan-actions hidden">
+                    <button type="button" class="btn btn-primary plan-action-btn" onclick="setTodayWirdStatus(true)">أنجزت ورد اليوم</button>
+                    <button type="button" class="btn btn-secondary plan-action-btn" onclick="setTodayWirdStatus(false)">لم أنجزه بعد</button>
                 </div>
             </div>
         </section>
@@ -505,6 +521,77 @@
 
             <div id="sunnan-content" class="sunnan-box">
                 <!-- سيتم عرض السنن هنا -->
+            </div>
+        </section>
+
+        <section id="prayer-times" class="section prayer-section">
+            <div class="section-header">
+                <h2>🕌 مواقيت الصلاة والتاريخ الهجري</h2>
+                <p>مواقيت اليوم مع تحديد الصلاة القادمة والعد التنازلي حسب المدينة التي تختارها</p>
+            </div>
+
+            <div class="prayer-controls">
+                <div class="control-group prayer-control-group">
+                    <label for="prayer-city-select">المدينة:</label>
+                    <select id="prayer-city-select">
+                        <option value="makkah">مكة المكرمة</option>
+                        <option value="madinah">المدينة المنورة</option>
+                        <option value="riyadh">الرياض</option>
+                        <option value="jeddah">جدة</option>
+                        <option value="dammam">الدمام</option>
+                    </select>
+                </div>
+                <button id="detect-location-btn" class="btn btn-secondary prayer-location-btn" type="button">استخدام موقعي الحالي</button>
+            </div>
+
+            <div id="prayer-status" class="prayer-status" aria-live="polite">جاري تحميل المواقيت...</div>
+
+            <div class="prayer-summary-grid">
+                <div class="prayer-summary-card next-prayer-card">
+                    <span class="summary-label">الصلاة القادمة</span>
+                    <strong id="next-prayer-name">--</strong>
+                    <span id="next-prayer-time" class="summary-time">--:--</span>
+                    <span id="next-prayer-countdown" class="summary-countdown">--:--:--</span>
+                </div>
+                <div class="prayer-summary-card">
+                    <span class="summary-label">التاريخ الهجري</span>
+                    <strong id="hijri-date">--</strong>
+                    <span id="hijri-date-detail" class="summary-note">--</span>
+                </div>
+                <div class="prayer-summary-card">
+                    <span class="summary-label">التاريخ الميلادي</span>
+                    <strong id="gregorian-date">--</strong>
+                    <span id="gregorian-date-detail" class="summary-note">--</span>
+                </div>
+                <div class="prayer-summary-card">
+                    <span class="summary-label">الموقع الحالي</span>
+                    <strong id="prayer-location-label">--</strong>
+                    <span id="prayer-timezone" class="summary-note">--</span>
+                </div>
+            </div>
+
+            <div id="prayer-times-grid" class="prayer-times-grid">
+                <!-- سيتم ملؤها بالجافاسكريبت -->
+            </div>
+
+            <div class="prayer-widgets">
+                <div class="widget-card prayer-insights-card">
+                    <h3>مؤشرات اليوم</h3>
+                    <div id="prayer-insights" class="prayer-insights-list">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </div>
+                </div>
+                <div class="widget-card prayer-converter-card">
+                    <h3>محول التاريخ</h3>
+                    <div class="prayer-converter-form">
+                        <label for="gregorian-converter-date">اختر تاريخاً ميلادياً</label>
+                        <input id="gregorian-converter-date" type="date">
+                        <button type="button" class="btn btn-primary" onclick="convertSelectedGregorianDate()">تحويل إلى هجري</button>
+                    </div>
+                    <div id="date-converter-result" class="date-converter-result">
+                        <p>اختر تاريخاً ثم اضغط تحويل لعرض التاريخ الهجري بصياغة عربية واضحة.</p>
+                    </div>
+                </div>
             </div>
         </section>
 

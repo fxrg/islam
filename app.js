@@ -333,6 +333,38 @@ const feelingsAyat = {
 
 // ===== متغيرات عامة =====
 let currentAyahDay = 1;
+const prayerLocationPresets = {
+    makkah: { key: 'makkah', label: 'مكة المكرمة', latitude: 21.3891, longitude: 39.8579, timeZone: 'Asia/Riyadh' },
+    madinah: { key: 'madinah', label: 'المدينة المنورة', latitude: 24.5247, longitude: 39.5692, timeZone: 'Asia/Riyadh' },
+    riyadh: { key: 'riyadh', label: 'الرياض', latitude: 24.7136, longitude: 46.6753, timeZone: 'Asia/Riyadh' },
+    jeddah: { key: 'jeddah', label: 'جدة', latitude: 21.5433, longitude: 39.1728, timeZone: 'Asia/Riyadh' },
+    dammam: { key: 'dammam', label: 'الدمام', latitude: 26.4207, longitude: 50.0888, timeZone: 'Asia/Riyadh' }
+};
+
+const prayerDisplayOrder = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+const prayerLabels = {
+    Fajr: 'الفجر',
+    Sunrise: 'الشروق',
+    Dhuhr: 'الظهر',
+    Asr: 'العصر',
+    Maghrib: 'المغرب',
+    Isha: 'العشاء'
+};
+
+let prayerState = {
+    location: null,
+    today: null,
+    tomorrow: null,
+    timeZone: 'Asia/Riyadh',
+    countdownInterval: null
+};
+
+let plannerState = {
+    generated: false,
+    khatmaCount: 1,
+    manualDay: 1,
+    completedDays: {}
+};
 
 // ===== دوال التهيئة =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -352,14 +384,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         initDaySelector();
+        initPlannerSection();
         showWird('morning');
-        generatePlan();
         showDailyAyah(1);
         showHadithCategory('ramadan');
+        initPrayerSection();
         
         // تحديث الوقت فوراً ثم كل دقيقة
         updateTimeNow();
         setInterval(updateTimeNow, 60000);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+            }
+        });
         
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function() {
@@ -391,14 +436,17 @@ function updateTimeNow() {
     try {
         const now = new Date();
         const hours = now.getHours();
-        const minutes = now.getMinutes();
         
         const timeElement = document.getElementById('current-time');
         const periodElement = document.getElementById('current-period');
         const sunnanContent = document.getElementById('sunnan-content');
         
         if (timeElement) {
-            timeElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            timeElement.textContent = new Intl.DateTimeFormat('ar-SA', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            }).format(now);
         }
         
         const period = getTimePeriod(hours);
@@ -418,6 +466,10 @@ function updateTimeNow() {
 // ===== دوال خطة الختم =====
 function initDaySelector() {
     const select = document.getElementById('current-day');
+    if (!select || select.options.length > 0) {
+        return;
+    }
+
     for (let i = 1; i <= 30; i++) {
         const option = document.createElement('option');
         option.value = i;
@@ -426,12 +478,142 @@ function initDaySelector() {
     }
 }
 
-function generatePlan() {
-    const khatmaCount = parseInt(document.getElementById('khatma-count').value);
-    const currentDay = parseInt(document.getElementById('current-day').value);
+function getCurrentHijriInfo() {
+    try {
+        const formatter = new Intl.DateTimeFormat('en-u-ca-islamic', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        const parts = formatter.formatToParts(new Date());
+        return {
+            day: Number(parts.find(part => part.type === 'day')?.value || 1),
+            month: (parts.find(part => part.type === 'month')?.value || '').toLowerCase(),
+            year: parts.find(part => part.type === 'year')?.value || ''
+        };
+    } catch (error) {
+        console.error('تعذر قراءة التاريخ الهجري:', error);
+        return null;
+    }
+}
+
+function getAutomaticRamadanDay() {
+    const hijriInfo = getCurrentHijriInfo();
+    if (!hijriInfo) {
+        return null;
+    }
+
+    return hijriInfo.month.includes('ramadan') ? Math.min(Math.max(hijriInfo.day, 1), 30) : null;
+}
+
+function getPlannerStorageKey() {
+    const hijriInfo = getCurrentHijriInfo();
+    return hijriInfo ? `planner-${hijriInfo.year}` : 'planner-default';
+}
+
+function loadPlannerState() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('ramadanPlannerState') || '{}');
+        const savedYearState = saved[getPlannerStorageKey()] || {};
+        plannerState = {
+            generated: false,
+            khatmaCount: Number(savedYearState.khatmaCount) || 1,
+            manualDay: Number(savedYearState.manualDay) || 1,
+            completedDays: savedYearState.completedDays || {}
+        };
+    } catch (error) {
+        console.error('تعذر تحميل حالة الخطة:', error);
+    }
+}
+
+function persistPlannerState() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('ramadanPlannerState') || '{}');
+        saved[getPlannerStorageKey()] = {
+            khatmaCount: plannerState.khatmaCount,
+            manualDay: plannerState.manualDay,
+            completedDays: plannerState.completedDays
+        };
+        localStorage.setItem('ramadanPlannerState', JSON.stringify(saved));
+    } catch (error) {
+        console.error('تعذر حفظ حالة الخطة:', error);
+    }
+}
+
+function getActivePlannerDay() {
+    return getAutomaticRamadanDay() || plannerState.manualDay || 1;
+}
+
+function initPlannerSection() {
+    loadPlannerState();
+
+    const currentDaySelect = document.getElementById('current-day');
+    const khatmaCountSelect = document.getElementById('khatma-count');
+    const activeDay = getActivePlannerDay();
+
+    if (currentDaySelect) {
+        currentDaySelect.value = String(activeDay);
+        currentDaySelect.addEventListener('change', function(event) {
+            plannerState.manualDay = Number(event.target.value);
+            persistPlannerState();
+        });
+    }
+
+    if (khatmaCountSelect) {
+        khatmaCountSelect.value = String(plannerState.khatmaCount);
+        khatmaCountSelect.addEventListener('change', function(event) {
+            plannerState.khatmaCount = Number(event.target.value);
+            persistPlannerState();
+        });
+    }
+
+    renderPlannerPlaceholder();
+}
+
+function renderPlannerPlaceholder() {
     const planContainer = document.getElementById('plan-result');
     const todayContent = document.getElementById('today-content');
+    const todayPlanActions = document.getElementById('today-plan-actions');
+    const currentDaySelect = document.getElementById('current-day');
+    const activeDay = getActivePlannerDay();
+
+    if (currentDaySelect) {
+        currentDaySelect.value = String(activeDay);
+    }
+
+    if (planContainer) {
+        planContainer.innerHTML = `
+            <div class="planner-placeholder">
+                <div class="planner-placeholder-icon">📘</div>
+                <h3>أنشئ خطتك أولاً</h3>
+                <p>اليوم المقترح تلقائياً: اليوم ${activeDay} من رمضان.</p>
+            </div>
+        `;
+    }
+
+    if (todayContent) {
+        todayContent.innerHTML = '<p>الخطة لم تُنشأ بعد. اختر عدد الختمات ثم اضغط إنشاء الخطة.</p>';
+    }
+
+    todayPlanActions?.classList.add('hidden');
+}
+
+function getPlannerCompletionStatus(day) {
+    return Boolean(plannerState.completedDays[String(day)]);
+}
+
+function generatePlan() {
+    const khatmaCount = parseInt(document.getElementById('khatma-count').value, 10);
+    const currentDay = parseInt(document.getElementById('current-day').value, 10) || getActivePlannerDay();
+    const planContainer = document.getElementById('plan-result');
+    const todayContent = document.getElementById('today-content');
+    const todayPlanActions = document.getElementById('today-plan-actions');
     
+    plannerState.generated = true;
+    plannerState.khatmaCount = khatmaCount;
+    plannerState.manualDay = currentDay;
+    persistPlannerState();
+
     const totalPages = 604;
     const pagesPerDay = Math.ceil((totalPages * khatmaCount) / 30);
     
@@ -446,27 +628,42 @@ function generatePlan() {
         const actualEnd = ((endPage - 1) % 604) + 1;
         
         const isToday = day === currentDay;
-        const isCompleted = day < currentDay;
+        const isCompleted = getPlannerCompletionStatus(day);
+        const isPast = day < currentDay;
         
         let classes = 'day-card';
         if (isToday) classes += ' today';
         if (isCompleted) classes += ' completed';
+        if (isPast && !isCompleted) classes += ' past';
         
         html += `<div class="${classes}" onclick="showDayDetails(${day}, ${startPage}, ${endPage})">
             <div class="day-number">${day}</div>
             <div class="day-reading">ص${actualStart}-${actualEnd}</div>
+            <div class="day-status">${isCompleted ? 'تم' : isToday ? 'اليوم' : isPast ? 'فات' : 'قادم'}</div>
         </div>`;
         
         if (isToday) {
+            const completedToday = getPlannerCompletionStatus(day);
             todayContent.innerHTML = `
-                <p><strong>📄 الصفحات:</strong> ${actualStart} - ${actualEnd}</p>
-                <p><strong>📚 عدد الصفحات:</strong> ${pagesPerDay} صفحة</p>
-                <p style="margin-top:0.5rem;color:var(--primary-dark);">🤲 بارك الله في وردك</p>
+                <div class="today-plan-summary ${completedToday ? 'is-done' : ''}">
+                    <p><strong>📅 اليوم:</strong> ${day} من رمضان</p>
+                    <p><strong>📄 الصفحات:</strong> ${actualStart} - ${actualEnd}</p>
+                    <p><strong>📚 عدد الصفحات:</strong> ${pagesPerDay} صفحة</p>
+                    <p class="today-plan-status">${completedToday ? 'أحسنت، تم تعليم ورد اليوم كمكتمل.' : 'ورد اليوم بانتظار الإنجاز.'}</p>
+                </div>
             `;
         }
     }
     
     planContainer.innerHTML = html;
+    todayPlanActions?.classList.remove('hidden');
+}
+
+function setTodayWirdStatus(isCompleted) {
+    const currentDay = parseInt(document.getElementById('current-day').value, 10) || getActivePlannerDay();
+    plannerState.completedDays[String(currentDay)] = isCompleted;
+    persistPlannerState();
+    generatePlan();
 }
 
 function showDayDetails(day, startPage, endPage) {
@@ -511,7 +708,7 @@ function nextDayAyah() {
 }
 
 function todayAyah() {
-    const selectedDay = parseInt(document.getElementById('current-day').value) || 1;
+    const selectedDay = parseInt(document.getElementById('current-day').value, 10) || getActivePlannerDay();
     showDailyAyah(selectedDay);
 }
 
@@ -965,10 +1162,69 @@ let currentPage = 1;
 let quranFontSize = 1.8;
 let hifzMode = false;
 let quranCache = {};
+let tafseerCache = {};
 
 // API URLs
 const QURAN_API_BASE = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1';
 const QURAN_EDITION = 'ara-quranuthmanihaf'; // النص العربي بالرسم العثماني
+
+// تطبيع النص العربي للبحث بدون حساسية للتشكيل أو أشكال الهمزة
+function normalizeArabicText(text) {
+    return String(text || '')
+        .normalize('NFD')
+        .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+        .replace(/[ـ]/g, '')
+        .replace(/[إأآٱ]/g, 'ا')
+        .replace(/[ى]/g, 'ي')
+        .replace(/[ؤ]/g, 'و')
+        .replace(/[ئ]/g, 'ي')
+        .replace(/[ة]/g, 'ه')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+}
+
+function buildNormalizedMap(text) {
+    const original = String(text || '');
+    let normalized = '';
+    const indexMap = [];
+
+    for (let i = 0; i < original.length; i++) {
+        const char = original[i];
+        const cleanChar = normalizeArabicText(char);
+
+        if (cleanChar) {
+            normalized += cleanChar;
+            indexMap.push(i);
+        }
+    }
+
+    return { normalized, indexMap };
+}
+
+function highlightNormalizedMatch(text, query) {
+    const normalizedQuery = normalizeArabicText(query);
+    if (!normalizedQuery) {
+        return text;
+    }
+
+    const { normalized, indexMap } = buildNormalizedMap(text);
+    const start = normalized.indexOf(normalizedQuery);
+
+    if (start === -1) {
+        return text;
+    }
+
+    const end = start + normalizedQuery.length - 1;
+    const originalStart = indexMap[start];
+    const originalEnd = indexMap[end];
+
+    if (originalStart === undefined || originalEnd === undefined) {
+        return text;
+    }
+
+    return `${text.slice(0, originalStart)}<span class="search-highlight">${text.slice(originalStart, originalEnd + 1)}</span>${text.slice(originalEnd + 1)}`;
+}
 
 // ===== دوال إدارة التخزين المحلي =====
 function getBookmarks() {
@@ -1403,6 +1659,12 @@ function displaySurahContent(ayahs, surahInfo) {
                         📤 مشاركة
                     </button>
                 </div>
+                <div class="ayah-inline-tools">
+                    <button class="ayah-action-btn tafseer-btn" onclick="event.stopPropagation(); toggleAyahTafseer(${currentSurah}, ${ayahNum})">
+                        📘 تفسير الآية
+                    </button>
+                </div>
+                <div class="ayah-tafseer" id="tafseer-${currentSurah}-${ayahNum}" style="display: none;"></div>
             </div>
         `;
     });
@@ -1451,6 +1713,69 @@ function shareAyah(surahName, ayahNum) {
         });
     } else {
         copyAyah(text, ayahNum);
+    }
+}
+
+async function fetchAyahTafseer(surahNum, ayahNum) {
+    const cacheKey = `${surahNum}:${ayahNum}`;
+    if (tafseerCache[cacheKey]) {
+        return tafseerCache[cacheKey];
+    }
+
+    const urls = [
+        `https://api.quran-tafseer.com/tafseer/1/${surahNum}/${ayahNum}`,
+        `http://api.quran-tafseer.com/tafseer/1/${surahNum}/${ayahNum}`
+    ];
+
+    for (const url of urls) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                continue;
+            }
+
+            const data = await response.json();
+            const tafseerText = data?.text || data?.tafseer || data?.content;
+            if (tafseerText) {
+                tafseerCache[cacheKey] = tafseerText;
+                return tafseerText;
+            }
+        } catch (error) {
+            // نجرب الرابط البديل
+        }
+    }
+
+    throw new Error('تعذر تحميل التفسير من الخادم');
+}
+
+async function toggleAyahTafseer(surahNum, ayahNum) {
+    const tafseerEl = document.getElementById(`tafseer-${surahNum}-${ayahNum}`);
+    if (!tafseerEl) {
+        return;
+    }
+
+    if (tafseerEl.style.display === 'block') {
+        tafseerEl.style.display = 'none';
+        return;
+    }
+
+    tafseerEl.style.display = 'block';
+
+    if (!tafseerEl.dataset.loaded) {
+        tafseerEl.innerHTML = '<div class="tafseer-loading">جاري تحميل التفسير...</div>';
+        try {
+            const tafseerText = await fetchAyahTafseer(surahNum, ayahNum);
+            tafseerEl.innerHTML = `
+                <div class="tafseer-header">📘 التفسير الميسر</div>
+                <p>${tafseerText}</p>
+            `;
+            tafseerEl.dataset.loaded = 'true';
+        } catch (error) {
+            tafseerEl.innerHTML = `
+                <div class="tafseer-header">⚠️ تعذر تحميل التفسير</div>
+                <p>تأكد من الاتصال بالإنترنت أو جرّب مرة أخرى بعد قليل.</p>
+            `;
+        }
     }
 }
 
@@ -1684,8 +2009,9 @@ async function searchQuran() {
     const searchInput = document.getElementById('quran-search-input');
     const resultsContainer = document.getElementById('search-results');
     const query = searchInput?.value.trim();
+    const normalizedQuery = normalizeArabicText(query);
     
-    if (!query || query.length < 2) {
+    if (!query || normalizedQuery.length < 2) {
         alert('أدخل كلمة للبحث (حرفين على الأقل)');
         return;
     }
@@ -1712,7 +2038,7 @@ async function searchQuran() {
         // البحث في الآيات
         const results = [];
         fullQuran.quran.forEach(ayah => {
-            if (ayah.text.includes(query)) {
+            if (normalizeArabicText(ayah.text).includes(normalizedQuery)) {
                 results.push(ayah);
             }
         });
@@ -1727,10 +2053,7 @@ async function searchQuran() {
         
         results.slice(0, 50).forEach(ayah => {
             const surah = surahsData.find(s => s.number === ayah.chapter);
-            const highlightedText = ayah.text.replace(
-                new RegExp(query, 'g'),
-                `<span class="search-highlight">${query}</span>`
-            );
+            const highlightedText = highlightNormalizedMatch(ayah.text, query);
             
             html += `
                 <div class="search-result-item" onclick="openSurahFromSearch(${ayah.chapter}, ${ayah.verse})">
@@ -1854,15 +2177,25 @@ function updateThemeIcon(isDark) {
     }
 }
 
+function setMobileMenuExpanded(isExpanded) {
+    const button = document.getElementById('mobile-menu-button');
+    if (button) {
+        button.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        button.setAttribute('aria-label', isExpanded ? 'إغلاق القائمة' : 'فتح القائمة');
+    }
+}
+
 // ===== قائمة الجوال =====
 function toggleMobileMenu() {
     const nav = document.querySelector('.main-nav');
     const burger = document.querySelector('.burger-menu');
     const overlay = document.querySelector('.nav-overlay');
+    const isOpening = !nav?.classList.contains('active');
     
     nav?.classList.toggle('active');
     burger?.classList.toggle('active');
     overlay?.classList.toggle('active');
+    setMobileMenuExpanded(isOpening);
     
     // منع التمرير عند فتح القائمة
     document.body.style.overflow = nav?.classList.contains('active') ? 'hidden' : '';
@@ -1876,7 +2209,494 @@ function closeMobileMenu() {
     nav?.classList.remove('active');
     burger?.classList.remove('active');
     overlay?.classList.remove('active');
+    setMobileMenuExpanded(false);
     document.body.style.overflow = '';
+}
+
+// ===== مواقيت الصلاة =====
+function initPrayerSection() {
+    const citySelect = document.getElementById('prayer-city-select');
+    const detectLocationButton = document.getElementById('detect-location-btn');
+
+    if (!citySelect) {
+        return;
+    }
+
+    citySelect.addEventListener('change', function(event) {
+        const selectedLocation = prayerLocationPresets[event.target.value];
+        if (selectedLocation) {
+            loadPrayerTimes(selectedLocation);
+        }
+    });
+
+    detectLocationButton?.addEventListener('click', detectPrayerLocation);
+
+    const storedLocation = getStoredPrayerLocation();
+    const initialLocation = storedLocation || prayerLocationPresets.makkah;
+
+    if (initialLocation.key && citySelect.querySelector(`option[value="${initialLocation.key}"]`)) {
+        citySelect.value = initialLocation.key;
+    }
+
+    loadPrayerTimes(initialLocation);
+}
+
+function getStoredPrayerLocation() {
+    try {
+        const savedLocation = localStorage.getItem('prayerLocation');
+        if (!savedLocation) {
+            return null;
+        }
+
+        const parsedLocation = JSON.parse(savedLocation);
+        if (parsedLocation?.key && prayerLocationPresets[parsedLocation.key]) {
+            return prayerLocationPresets[parsedLocation.key];
+        }
+
+        if (typeof parsedLocation?.latitude === 'number' && typeof parsedLocation?.longitude === 'number') {
+            return parsedLocation;
+        }
+
+        return null;
+    } catch (error) {
+        console.error('تعذر قراءة الموقع المحفوظ:', error);
+        return null;
+    }
+}
+
+function persistPrayerLocation(location) {
+    try {
+        localStorage.setItem('prayerLocation', JSON.stringify(location));
+    } catch (error) {
+        console.error('تعذر حفظ موقع الصلاة:', error);
+    }
+}
+
+function setPrayerStatus(message, type = 'info') {
+    const statusElement = document.getElementById('prayer-status');
+    if (!statusElement) {
+        return;
+    }
+
+    statusElement.textContent = message;
+    statusElement.className = `prayer-status ${type}`;
+}
+
+function getDateInTimeZone(timeZone) {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    });
+    const parts = formatter.formatToParts(new Date());
+    const year = Number(parts.find(part => part.type === 'year')?.value || new Date().getFullYear());
+    const month = Number(parts.find(part => part.type === 'month')?.value || new Date().getMonth() + 1);
+    const day = Number(parts.find(part => part.type === 'day')?.value || new Date().getDate());
+    return new Date(year, month - 1, day);
+}
+
+function buildPrayerApiDate(date) {
+    return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+}
+
+async function fetchPrayerTimings(location, date) {
+    const endpoint = `https://api.aladhan.com/v1/timings/${buildPrayerApiDate(date)}?latitude=${location.latitude}&longitude=${location.longitude}&method=4&school=0&midnightMode=1`;
+    const response = await fetch(endpoint);
+
+    if (!response.ok) {
+        throw new Error(`Prayer API failed with status ${response.status}`);
+    }
+
+    const payload = await response.json();
+    if (payload.code !== 200 || !payload.data) {
+        throw new Error('Prayer API returned invalid data');
+    }
+
+    return payload.data;
+}
+
+async function loadPrayerTimes(location) {
+    const citySelect = document.getElementById('prayer-city-select');
+    const detectLocationButton = document.getElementById('detect-location-btn');
+
+    if (citySelect) {
+        citySelect.disabled = true;
+    }
+
+    if (detectLocationButton) {
+        detectLocationButton.disabled = true;
+    }
+
+    setPrayerStatus('جاري تحديث مواقيت الصلاة...', 'loading');
+
+    try {
+        const baseDate = getDateInTimeZone(location.timeZone || 'Asia/Riyadh');
+        const tomorrowDate = new Date(baseDate);
+        tomorrowDate.setDate(baseDate.getDate() + 1);
+
+        const [todayData, tomorrowData] = await Promise.all([
+            fetchPrayerTimings(location, baseDate),
+            fetchPrayerTimings(location, tomorrowDate)
+        ]);
+
+        prayerState.location = location;
+        prayerState.today = todayData;
+        prayerState.tomorrow = tomorrowData;
+        prayerState.timeZone = todayData.meta?.timezone || location.timeZone || 'Asia/Riyadh';
+
+        persistPrayerLocation({
+            key: location.key,
+            label: location.label,
+            latitude: location.latitude,
+            longitude: location.longitude,
+            timeZone: prayerState.timeZone
+        });
+
+        renderPrayerSection();
+        startPrayerCountdown();
+        setPrayerStatus(`تم تحديث المواقيت لمدينة ${location.label}`, 'success');
+    } catch (error) {
+        console.error('خطأ في تحميل مواقيت الصلاة:', error);
+        setPrayerStatus('تعذر تحميل المواقيت حالياً. تحقق من الاتصال ثم أعد المحاولة.', 'error');
+    } finally {
+        if (citySelect) {
+            citySelect.disabled = false;
+        }
+
+        if (detectLocationButton) {
+            detectLocationButton.disabled = false;
+        }
+    }
+}
+
+function detectPrayerLocation() {
+    if (!navigator.geolocation) {
+        setPrayerStatus('المتصفح لا يدعم تحديد الموقع الجغرافي.', 'error');
+        return;
+    }
+
+    setPrayerStatus('جارٍ تحديد موقعك الحالي...', 'loading');
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const customLocation = {
+                key: 'current-location',
+                label: 'موقعك الحالي',
+                latitude: Number(position.coords.latitude.toFixed(4)),
+                longitude: Number(position.coords.longitude.toFixed(4)),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+
+            loadPrayerTimes(customLocation);
+        },
+        function() {
+            setPrayerStatus('تعذر الوصول إلى موقعك. يمكنك اختيار مدينة يدوياً.', 'error');
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000
+        }
+    );
+}
+
+function cleanPrayerTime(timeValue) {
+    return String(timeValue || '--').split(' ')[0].trim();
+}
+
+function prayerTimeToSeconds(timeValue) {
+    const [hours = '0', minutes = '0'] = cleanPrayerTime(timeValue).split(':');
+    return (Number(hours) * 3600) + (Number(minutes) * 60);
+}
+
+function getTimeZoneNowParts(timeZone) {
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    const parts = formatter.formatToParts(new Date());
+    const result = {};
+
+    parts.forEach(part => {
+        if (part.type !== 'literal') {
+            result[part.type] = part.value;
+        }
+    });
+
+    return {
+        year: Number(result.year),
+        month: Number(result.month),
+        day: Number(result.day),
+        hour: Number(result.hour),
+        minute: Number(result.minute),
+        second: Number(result.second)
+    };
+}
+
+function formatCountdown(totalSeconds) {
+    const safeSeconds = Math.max(0, totalSeconds);
+    const hours = Math.floor(safeSeconds / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((safeSeconds % 3600) / 60).toString().padStart(2, '0');
+    const seconds = Math.floor(safeSeconds % 60).toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+function formatPrayerTimeForDisplay(timeValue) {
+    const [hours = '0', minutes = '0'] = cleanPrayerTime(timeValue).split(':');
+    const date = new Date();
+    date.setHours(Number(hours), Number(minutes), 0, 0);
+    return new Intl.DateTimeFormat('ar-SA', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    }).format(date);
+}
+
+function formatDateInputValue(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function convertGregorianDateToHijri(date) {
+    const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        weekday: 'long'
+    });
+
+    return hijriFormatter.format(date);
+}
+
+function calculateNightSegments() {
+    if (!prayerState.today || !prayerState.tomorrow) {
+        return [];
+    }
+
+    const maghribSeconds = prayerTimeToSeconds(prayerState.today.timings.Maghrib);
+    const fajrSeconds = 86400 + prayerTimeToSeconds(prayerState.tomorrow.timings.Fajr);
+    const nightLength = fajrSeconds - maghribSeconds;
+    const lastThirdStart = fajrSeconds - Math.floor(nightLength / 3);
+    const midnight = maghribSeconds + Math.floor(nightLength / 2);
+
+    const formatSeconds = (seconds) => {
+        const normalized = seconds % 86400;
+        const hours = Math.floor(normalized / 3600);
+        const minutes = Math.floor((normalized % 3600) / 60);
+        return formatPrayerTimeForDisplay(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`);
+    };
+
+    return [
+        { label: 'الشروق', value: formatPrayerTimeForDisplay(prayerState.today.timings.Sunrise), note: 'بداية ارتفاع الشمس' },
+        { label: 'منتصف الليل الشرعي', value: formatSeconds(midnight), note: 'منتصف ما بين المغرب وفجر الغد' },
+        { label: 'بداية الثلث الأخير', value: formatSeconds(lastThirdStart), note: 'وقت مبارك للدعاء والقيام' }
+    ];
+}
+
+function renderPrayerInsights() {
+    const insightsContainer = document.getElementById('prayer-insights');
+    if (!insightsContainer) {
+        return;
+    }
+
+    const insights = calculateNightSegments();
+    insightsContainer.innerHTML = insights.map(item => `
+        <div class="prayer-insight-item">
+            <div>
+                <strong>${item.label}</strong>
+                <p>${item.note}</p>
+            </div>
+            <span>${item.value}</span>
+        </div>
+    `).join('');
+}
+
+function initPrayerConverter() {
+    const input = document.getElementById('gregorian-converter-date');
+    if (!input) {
+        return;
+    }
+
+    if (!input.value) {
+        input.value = formatDateInputValue(new Date());
+    }
+
+    convertSelectedGregorianDate();
+}
+
+function convertSelectedGregorianDate() {
+    const input = document.getElementById('gregorian-converter-date');
+    const result = document.getElementById('date-converter-result');
+    if (!input || !result || !input.value) {
+        return;
+    }
+
+    const selectedDate = new Date(`${input.value}T12:00:00`);
+    const gregorianText = new Intl.DateTimeFormat('ar-SA', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        weekday: 'long'
+    }).format(selectedDate);
+
+    result.innerHTML = `
+        <strong>${convertGregorianDateToHijri(selectedDate)}</strong>
+        <span>الموافق ميلادياً: ${gregorianText}</span>
+    `;
+}
+
+function getNextPrayerInfo() {
+    if (!prayerState.today || !prayerState.tomorrow) {
+        return null;
+    }
+
+    const now = getTimeZoneNowParts(prayerState.timeZone);
+    const currentSeconds = (now.hour * 3600) + (now.minute * 60) + now.second;
+
+    for (const prayerName of ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']) {
+        const prayerSeconds = prayerTimeToSeconds(prayerState.today.timings[prayerName]);
+        if (prayerSeconds > currentSeconds) {
+            return {
+                name: prayerName,
+                label: prayerLabels[prayerName],
+                displayTime: formatPrayerTimeForDisplay(prayerState.today.timings[prayerName]),
+                countdownSeconds: prayerSeconds - currentSeconds,
+                isTomorrow: false
+            };
+        }
+    }
+
+    const nextDayFajrSeconds = prayerTimeToSeconds(prayerState.tomorrow.timings.Fajr);
+    return {
+        name: 'Fajr',
+        label: prayerLabels.Fajr,
+        displayTime: formatPrayerTimeForDisplay(prayerState.tomorrow.timings.Fajr),
+        countdownSeconds: (86400 - currentSeconds) + nextDayFajrSeconds,
+        isTomorrow: true
+    };
+}
+
+function renderPrayerSection() {
+    if (!prayerState.today) {
+        return;
+    }
+
+    const grid = document.getElementById('prayer-times-grid');
+    const nextPrayer = getNextPrayerInfo();
+    const hijriDate = prayerState.today.date?.hijri;
+    const gregorianDate = prayerState.today.date?.gregorian;
+    const hijriText = hijriDate
+        ? `${hijriDate.day} ${hijriDate.month?.ar || hijriDate.month?.en || ''} ${hijriDate.year}هـ`
+        : '--';
+    const gregorianText = gregorianDate
+        ? `${gregorianDate.day} ${gregorianDate.month?.ar || gregorianDate.month?.en || ''} ${gregorianDate.year}`
+        : '--';
+
+    const nextPrayerName = document.getElementById('next-prayer-name');
+    const nextPrayerTime = document.getElementById('next-prayer-time');
+    const nextPrayerCountdown = document.getElementById('next-prayer-countdown');
+    const hijriDateElement = document.getElementById('hijri-date');
+    const hijriDateDetail = document.getElementById('hijri-date-detail');
+    const gregorianDateElement = document.getElementById('gregorian-date');
+    const gregorianDateDetail = document.getElementById('gregorian-date-detail');
+    const prayerLocationLabel = document.getElementById('prayer-location-label');
+    const prayerTimezone = document.getElementById('prayer-timezone');
+
+    if (nextPrayerName) {
+        nextPrayerName.textContent = nextPrayer ? `${nextPrayer.label}${nextPrayer.isTomorrow ? ' غداً' : ''}` : '--';
+    }
+
+    if (nextPrayerTime) {
+        nextPrayerTime.textContent = nextPrayer?.displayTime || '--';
+    }
+
+    if (nextPrayerCountdown) {
+        nextPrayerCountdown.textContent = nextPrayer ? formatCountdown(nextPrayer.countdownSeconds) : '--:--:--';
+    }
+
+    if (hijriDateElement) {
+        hijriDateElement.textContent = hijriText;
+    }
+
+    if (hijriDateDetail) {
+        hijriDateDetail.textContent = hijriDate?.weekday?.ar || 'التاريخ الهجري';
+    }
+
+    if (gregorianDateElement) {
+        gregorianDateElement.textContent = gregorianText;
+    }
+
+    if (gregorianDateDetail) {
+        gregorianDateDetail.textContent = gregorianDate?.weekday?.ar || gregorianDate?.weekday?.en || 'التاريخ الميلادي';
+    }
+
+    if (prayerLocationLabel) {
+        prayerLocationLabel.textContent = prayerState.location?.label || '--';
+    }
+
+    if (prayerTimezone) {
+        prayerTimezone.textContent = prayerState.timeZone || '--';
+    }
+
+    if (grid) {
+        grid.innerHTML = prayerDisplayOrder.map(prayerName => {
+            const isNextPrayer = nextPrayer?.name === prayerName;
+            return `
+                <div class="prayer-time-card ${isNextPrayer ? 'is-next' : ''}">
+                    <span class="prayer-time-name">${prayerLabels[prayerName]}</span>
+                    <strong class="prayer-time-value">${formatPrayerTimeForDisplay(prayerState.today.timings[prayerName])}</strong>
+                    <span class="prayer-time-meta">${isNextPrayer ? 'الصلاة القادمة' : 'موعد اليوم'}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    renderPrayerInsights();
+    initPrayerConverter();
+}
+
+function startPrayerCountdown() {
+    if (prayerState.countdownInterval) {
+        clearInterval(prayerState.countdownInterval);
+    }
+
+    renderPrayerSection();
+
+    prayerState.countdownInterval = setInterval(function() {
+        const nextPrayer = getNextPrayerInfo();
+        const nextPrayerName = document.getElementById('next-prayer-name');
+        const nextPrayerTime = document.getElementById('next-prayer-time');
+        const nextPrayerCountdown = document.getElementById('next-prayer-countdown');
+
+        if (!nextPrayer) {
+            return;
+        }
+
+        if (nextPrayerName) {
+            nextPrayerName.textContent = `${nextPrayer.label}${nextPrayer.isTomorrow ? ' غداً' : ''}`;
+        }
+
+        if (nextPrayerTime) {
+            nextPrayerTime.textContent = nextPrayer.displayTime;
+        }
+
+        if (nextPrayerCountdown) {
+            nextPrayerCountdown.textContent = formatCountdown(nextPrayer.countdownSeconds);
+        }
+
+        if (nextPrayer.countdownSeconds <= 1) {
+            renderPrayerSection();
+        }
+    }, 1000);
 }
 
 // ===== عرض المصحف مع تقليب الصفحات =====
@@ -2299,7 +3119,7 @@ function updateReviewCounts() {
 
 async function goToAyah(surah, ayah) {
     // إغلاق القارئ إذا مفتوح
-    closeQuranReader();
+    closeReader();
     
     // فتح السورة
     await openSurah(surah);
